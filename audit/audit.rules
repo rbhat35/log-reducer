@@ -1,0 +1,8 @@
+# Contains audit rules that will be loaded by the audit daemon's init script
+# whenever the daemon is started. 
+
+# syscall rules.
+-a always,end -F arch=b64 -S open,openat
+-a always,end -F arch=b64 -S read,readv
+-a always,end -F arch=b64 -S write,writev
+#TODO: Add more rules. For now just tracking open, read, and writes.
