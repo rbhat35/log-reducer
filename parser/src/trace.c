@@ -51,7 +51,12 @@ static int insert_rule(int audit_fd, const char *field)
 	memset(rule, 0, sizeof(struct audit_rule_data));
 	if (threat) {
 		rc = 0;
+		rc |= audit_rule_syscallbyname_data(rule, "read");
+		rc |= audit_rule_syscallbyname_data(rule, "readv");
+		rc |= audit_rule_syscallbyname_data(rule, "write");
+		rc |= audit_rule_syscallbyname_data(rule, "writev");
 		rc |= audit_rule_syscallbyname_data(rule, "open");
+		rc |= audit_rule_syscallbyname_data(rule, "close");
 		rc |= audit_rule_syscallbyname_data(rule, "openat");
 		rc |= audit_rule_syscallbyname_data(rule, "creat");
 		rc |= audit_rule_syscallbyname_data(rule, "truncate");
@@ -235,6 +240,12 @@ int main(int argc, char *argv[])
 					//(void)delete_all_rules(audit_fd);
 					exit(1);
 				}
+
+				snprintf(field, sizeof(field), "inode!=%d", 0x1);
+                if (insert_rule(audit_fd, field)) {
+					kill(pid,SIGTERM);
+                    exit(1);
+                }
 				sleep(1);
 				if (write(fd[1],"1", 1) != 1) {
 					kill(pid,SIGTERM);
