@@ -14,8 +14,20 @@ file_map = defaultdict(dict)
 i_map = defaultdict(dict)
 
 
-with open('./sys_table.json') as infile:
-    sys_table = json.load(infile)
+def get_inode(pid, fd):
+    """Get inode value for pid, fd pair."""
+    key = "{0}:{1}".format(pid, fd)
+    return file_map[key]
+
+
+def get_ts(au):
+    event = au.get_timestamp()
+    ts = "{0}.{1}.{2}".format(event.sec, event.milli, event.serial)
+    return ts
+
+
+def get_rc(au):
+    return au.find_field('exit')
 
 
 def get_subject(au):
@@ -25,83 +37,94 @@ def get_subject(au):
     subject = "{0}:{1}".format(pid, exe)
     return (subject, pid, exe)
 
-def get_ts(au):
-    event = au.get_timestamp()
-    ts = "{0}.{1}.{2}".format(event.sec, event.milli, event.serial)
-    return ts
+class Parser(object):
 
-def get_rc(au):
-    return au.find_field('exit')
+    def parse_file(self, au_log):
+        """Parse an audit log saved in a file."""
+        au = auparse.AuParser(auparse.AUSOURCE_FILE, au_log)
 
+        while au.parse_next_event():
+            if au.get_type() == 1300:
+                self.parse_syscall(au)
+            au.next_record()
 
-def handle_new(au):
-    """ Add resource descriptor to map.
+    def parse_syscall(self, au):
+        """ Parse a audit log.
 
-    XXX. Order of fields matter when using find_field.
+        Warning: Order of parsing matters.
+        """
+        sysnum = au.find_field('syscall')
+        self.syscall = sys_table[sysnum]
 
-    1. Adds a mapping from <pid>:fd --> inode.
-    """
-    fd = get_rc(au)
-    items = au.find_field('items')
-    subject, pid, _ = get_subject(au)
+        if self.syscall in ['open', 'execve']:
+            event = self.handle_open(au)
+            #event = (ts, subject, self.syscall, resource, i_map[resource])
+        elif self.syscall in ['read', 'readv']:
+            event = self.handle_read(au)
+        elif self.syscall in ['write', 'writev']:
+            event = self.handle_write(au)
+        else:
+            event = "not used."
 
-    key = "{0}:{1}".format(pid, fd)
-    # Get CWD.
-    au.next_record()
-    cwd = au.find_field('cwd')
-    au.next_record()
-    name = au.find_field('name')
-    inode = hex(int(au.find_field('inode')))
+        if event and event != 'not used.':
+            print event
+            print ','.join(event)
 
-    i_map[inode] = name if '.' != name[0] else path.join(cwd + name[1:])
-    file_map[key] = inode
+    def handle_new(self, au):
+        """ Add resource descriptor to map.
 
-    return (subject, inode)
+        XXX. Order of fields matter when using find_field.
 
+        1. Adds a mapping from <pid>:fd --> inode.
+        """
+        fd = get_rc(au)
+        items = au.find_field('items')
+        subject, pid, _ = get_subject(au)
 
-def get_inode(pid, fd):
-    """Get inode value for pid, fd pair."""
-    key = "{0}:{1}".format(pid, fd)
-    return file_map[key]
+        key = "{0}:{1}".format(pid, fd)
+        # Get CWD.
+        au.next_record()
+        cwd = au.find_field('cwd')
+        au.next_record()
+        name = au.find_field('name')
+        inode = hex(int(au.find_field('inode')))
 
+        i_map[inode] = name if '.' != name[0] else path.join(cwd + name[1:])
+        file_map[key] = inode
 
-def parse_syscall(au):
-    """ Parse a audit log.
+        return (subject, inode)
 
-    Warning: Order of parsing matters.
-    """
-    sysnum = au.find_field('syscall')
-    syscall = sys_table[sysnum]
-    ts = get_ts(au)
-    if syscall in ['open', 'execve']:
-        # Create file map and inode map.
-        subject, resource  = handle_new(au)
-        #fd = au.find_field('exit')
-        event = (ts, subject, syscall, resource, i_map[resource])
-    elif syscall in ['read', 'write']:
+    def handle_read(self, au):
+        """syscalls: read, readv"""
+        ts = get_ts(au)
         fd = au.find_field('a0')
         subject, pid, _ = get_subject(au)
         inode = get_inode(pid, fd)
-        event = (ts, subject, syscall, get_inode(pid, fd), i_map[inode])
-    else:
-        return
+        event = (ts, subject, self.syscall, get_inode(pid, fd), i_map[inode])
+        return event
 
-    print ','.join(event)
+    def handle_write(self, au):
+        """syscalls: write, writev"""
+        ts = get_ts(au)
+        fd = au.find_field('a0')
+        subject, pid, _ = get_subject(au)
+        inode = get_inode(pid, fd)
+        event = (ts, subject, self.syscall, get_inode(pid, fd), i_map[inode])
+        return event
 
-
-def parse_file(au_log):
-    au = auparse.AuParser(auparse.AUSOURCE_FILE, au_log)
-
-    while au.parse_next_event():
-        if au.get_type() == 1300:
-            parse_syscall(au)
-        au.next_record()
+    def handle_open(self, au):
+        """syscalls open"""
+        ts = get_ts(au)
+        subject, resource = self.handle_new(au)
+        event = (ts, subject, self.syscall, resource, i_map[resource])
+        return event
 
 
 def main():
-
     au_log = sys.argv[1]
-    parse_file(au_log)
+    Parser().parse_file(au_log)
 
 if __name__ == '__main__':
+    with open('./sys_table.json') as infile:
+        sys_table = json.load(infile)
     main()
