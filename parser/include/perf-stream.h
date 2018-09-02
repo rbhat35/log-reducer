@@ -1,3 +1,6 @@
+#ifndef __PERF_STREAM_H__
+#define __PERF_STREAM_H__
+
 #include <linux/perf_event.h>
 #include "common.h"
 
@@ -31,6 +34,12 @@ struct perf_event_mmap_page *header;
  */
 void *base, *data, *aux;
 
+/** Getters for information related to aux section.
+ * 
+ */
+void *get_aux_begin();
+void *get_aux_end();
+
 /** Init the perf_event_attr structure.
  *
  * Configures the perf_event_attr structure to handle intel-pt data.
@@ -54,8 +63,8 @@ int perf_event_open(pid_t pid);
  * 2^AUX_PAGES are mapped in for the aux section.
  * 2^DATA_PAGES are mapped in for the aux section. 
  */
-#define AUX_PAGES 1
-#define DATA_PAGES 1
+#define AUX_PAGES 2
+#define DATA_PAGES 2
 
 /** Create memory for AUX, DATA, and perf_event_mmap page.
  *
@@ -75,3 +84,4 @@ int perf_event_open(pid_t pid);
  */
 void perf_map(int fd, size_t data_n, size_t aux_n);
 
+#endif
