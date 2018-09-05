@@ -21,7 +21,7 @@ CYPHER_ARGS="-a $NEO4J_SERVER -u neo4j -p theianeo4j1"
 # QUERY="\"CREATE CONSTRAINT ON (n:NODE) ASSERT n.uuid IS UNIQUE\""
 #eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${QUERY}"
 
-INPUT_FILE='test.csv'
+INPUT_FILE='backwards.csv'
 
 # Get list of CSV files
 #for file in $root/backward-edge-*; do
@@ -37,12 +37,31 @@ LOAD CSV FROM 'file:///backward-edge.csv' as line
 MERGE (n1:SUBJECT {name: line[1]})
 MERGE (n2:RESOURCE {name: line[4], inode: line[3]})
 WITH line,n1,n2
+CREATE (n1)-[:SYSCALL {nodeType:line[2], type : line[2]}]->(n2)
+\""
+
+#WITH line,n1,n3
+#DELETE="MATCH (n) DETACH DELETE n;"
+#eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${DELETE}"
+eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${QUERY}"
+
+
+INPUT_FILE='forward.csv'
+
+cp $INPUT_FILE $IMPORT_DIR/forward-edge.csv
+
+QUERY="\"
+USING PERIODIC COMMIT 500
+LOAD CSV FROM 'file:///forward-edge.csv' as line
+MERGE (n1:SUBJECT {name: line[1]})
+MERGE (n2:RESOURCE {name: line[4], inode: line[3]})
+WITH line,n1,n2
 CREATE (n1)<-[:SYSCALL {nodeType:line[2], type : line[2]}]-(n2)
 \""
 
 #WITH line,n1,n3
-DELETE="MATCH (n) DETACH DELETE n;"
-eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${DELETE}"
+#DELETE="MATCH (n) DETACH DELETE n;"
+#eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${DELETE}"
 eval "${CYPHER_BIN}" "${CYPHER_ARGS}" "${QUERY}"
 
 #	QUERY2="\"

@@ -7,24 +7,10 @@ from os import path
 import json
 from collections import defaultdict
 
+from modules import FileMap, Stream, Event
+
 class ParseError(Exception):
     pass
-
-file_map = defaultdict(dict)
-i_map = defaultdict(dict)
-
-
-def get_inode(pid, fd):
-    """Get inode value for pid, fd pair."""
-    s = {'0': 'stdin', '1' : 'stdout', '2' : 'stderr'}
-
-    i_map[pid].update(s)
-
-    if fd in ['0', '1', '2']:
-        return s[fd]
-
-    key = "{0}:{1}".format(pid, fd)
-    return file_map[key]
 
 
 def get_ts(au):
@@ -45,6 +31,11 @@ def get_subject(au):
 
 class Parser(object):
 
+    def __init__(self):
+        self.fmap = FileMap()
+        self.in_flow = Stream("forward.csv")
+        self.out_flow = Stream("backwards.csv")
+
     def parse_file(self, au_log):
         """Parse an audit log saved in a file."""
         au = auparse.AuParser(auparse.AUSOURCE_FILE, au_log)
@@ -62,7 +53,7 @@ class Parser(object):
         sysnum = au.find_field('syscall')
         self.syscall = sys_table[sysnum]
 
-        print au.get_line_number()
+        print self.syscall
 
         if self.syscall in ['open', 'execve']:
             event = self.handle_open(au)
@@ -79,7 +70,6 @@ class Parser(object):
 
         if event and event != 'not used.':
             print event
-            print ','.join(event)
 
     def handle_new(self, au):
         """ Add resource descriptor to map.
@@ -111,8 +101,8 @@ class Parser(object):
             # stdin, stdout, ...
             inode = fd
 
-        i_map[inode] = name if '.' != name[0] else path.join(cwd + name[1:])
-        file_map[key] = inode
+        name = name if '.' != name[0] else path.join(cwd + name[1:])
+        self.fmap.add_file(pid, fd, name, inode)
 
         return (subject, inode)
 
@@ -121,18 +111,22 @@ class Parser(object):
         ts = get_ts(au)
         fd = au.find_field('a0')
         subject, pid, _ = get_subject(au)
-        inode = get_inode(pid, fd)
-        event = (ts, subject, self.syscall, get_inode(pid, fd), i_map[inode])
-        return event
+
+        inode = self.fmap.get_inode(pid, fd)
+        name = self.fmap.ino2name(inode)
+        event = Event(ts, subject, self.syscall, self.fmap.get_inode(pid, fd), name)
+        self.in_flow.write(event)
 
     def handle_write(self, au):
         """syscalls: write, writev"""
         ts = get_ts(au)
         fd = au.find_field('a0')
         subject, pid, _ = get_subject(au)
-        inode = get_inode(pid, fd)
-        event = (ts, subject, self.syscall, get_inode(pid, fd), i_map[inode])
-        return event
+
+        inode = self.fmap.get_inode(pid, fd)
+        name = self.ino2name(inode)
+        event = Event(ts, subject, self.syscall, self.fmap.get_inode(pid, fd), name)
+        self.out_flow.write(event)
 
     def handle_open(self, au):
         """syscalls open"""
@@ -140,22 +134,25 @@ class Parser(object):
         subject, resource = self.handle_new(au)
         if not subject:
             return None
-        event = (ts, subject, self.syscall, resource, i_map[resource])
-        return event
+
+        name = self.fmap.ino2name(resource)
+        event = Event(ts, subject, self.syscall, resource, name)
+        #XXX. Are opens necessary to store?
+        self.in_flow.write(event)
 
     def handle_close(self, au):
         """syscalls open"""
         ts = get_ts(au)
         fd = au.find_field('a0')
         subject, pid, _ = get_subject(au)
-        inode = get_inode(pid, fd)
-        if inode not in ['stdin', 'stdout', 'stderr']:
-            filename = i_map[inode]
-        else:
-            filename = "stdout"
-        event = (ts, subject, self.syscall, inode, filename)
-        return event
+        #XXX. Delete the fd related to this file.
 
+        inode = self.fmap.get_inode(pid, fd)
+        filename = self.fmap.ino2name(inode)
+        self.fmap.del_file(pid, fd)
+
+        event = Event(ts, subject, self.syscall, inode, filename)
+        self.out_flow.write(event)
 
 
 def main():

@@ -16,10 +16,10 @@ int main(int argc, char **argv) {
     // Read 256 bytes at a time.
     do {
         bytes_read += rc;
-        rc = syscall(0, fd, buffer + bytes_read, 256);
+        rc = read(fd, buffer + bytes_read, 256);
     } while (rc > 0);
 
     buffer[bytes_read + 1] = '\0';
 
-    syscall(1, 1, buffer, bytes_read);
+    write(1, buffer, bytes_read);
 }
