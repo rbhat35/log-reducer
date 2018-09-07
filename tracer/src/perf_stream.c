@@ -7,7 +7,10 @@
 #include "perf-stream.h"
 
 void *get_aux_begin(){return aux;}
+void *get_data_begin(){return data;}
 void *get_aux_end(){return aux + header->aux_size;}
+void *get_data_end(){return data + header->data_size;}
+
 
 int init_perf()
 {
@@ -17,6 +20,9 @@ int init_perf()
     attr.exclude_kernel = EXCLUDE_KERNEL;
     //XXX. Check if this needs to be set if we are no longer using pevent.c
     attr.sample_id_all = 1;
+    attr.mmap = 1;
+    attr.mmap2 = 1;
+    attr.comm = 1;
 }
 
 
@@ -58,3 +64,5 @@ void perf_map(int fd, size_t data_n, size_t aux_n)
 
     T_DEBUG("Aux and Data sections initialized.\n");
 }
+
+
