@@ -3,34 +3,34 @@
 #include <libipt-sb.h>
 #include "perf-stream.h"
 
-void init_sb_decoder() {
-
-    struct pt_sb_pevent_config sb_config;
-    struct pt_sb_session *sb_session = NULL;
-    int error = NULL;
-    memset(&sb_config, 0, sizeof(sb_config));
-
-    // Configure perf sb config.
-    sb_config.size = sizeof(sb_config);
-    sb_config.filename = "sb.data";
-    sb_config.begin = get_data_begin();
-    sb_config.time_shift = header->time_shift;
-    sb_config.time_mult = header->time_mult;
-    sb_config.time_zero = header->time_zero;
-    //sb_config.sample_type = header->sample_type;
-    // Create a new pt sb session.
-    sb_session = pt_sb_alloc(NULL);
-    if(!sb_session)
-        fail("Failed to create sideband session\n.");
-
-    // Create pevent_decoder.
-    error = pt_sb_alloc_pevent_decoder(sb_session, &sb_config);
-    if (error) {
-        T_DEBUG("ptse_trace_lost: %d\n", pte_invalid);
-        fail("Failed to allocate sb decoder (err: %d)\n", error);
-    }
-}
-
+//void init_sb_decoder() {
+//
+//    struct pt_sb_pevent_config sb_config;
+//    struct pt_sb_session *sb_session = NULL;
+//    int error = NULL;
+//    memset(&sb_config, 0, sizeof(sb_config));
+//
+//    // Configure perf sb config.
+//    sb_config.size = sizeof(sb_config);
+//    sb_config.filename = "sb.data";
+//    sb_config.begin = get_data_begin();
+//    sb_config.time_shift = header->time_shift;
+//    sb_config.time_mult = header->time_mult;
+//    sb_config.time_zero = header->time_zero;
+//    //sb_config.sample_type = header->sample_type;
+//    // Create a new pt sb session.
+//    sb_session = pt_sb_alloc(NULL);
+//    if(!sb_session)
+//        fail("Failed to create sideband session\n.");
+//
+//    // Create pevent_decoder.
+//    error = pt_sb_alloc_pevent_decoder(sb_session, &sb_config);
+//    if (error) {
+//        T_DEBUG("ptse_trace_lost: %d\n", pte_invalid);
+//        fail("Failed to allocate sb decoder (err: %d)\n", error);
+//    }
+//}
+//
 struct pt_packet* pt_packet_new() {
     struct pt_packet *pkt = NULL;
 

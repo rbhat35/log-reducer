@@ -4,6 +4,8 @@
 #include <intel-pt.h>
 #include "common.h"
 
+void init_sb_decoder();
+
 /** libipt configuration options.
  * 
  * Holds the configuration parameters for libipt. A call 

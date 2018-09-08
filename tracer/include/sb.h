@@ -5,7 +5,10 @@
 #include "pevent.h"
 #include <intel-pt>
 
+// Sideband decoding session.
+
 int init_perf_pv();
 struct pev_event *read_data_pv();
+
 
 #endif

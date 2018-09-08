@@ -6,7 +6,7 @@ CC=gcc -O0 -g
 LIBS = -laudit -lipt
 CFLAGS_DEBUG = -DCONFIG_DEBUG
 L_INCLUDE = -L/usr/lib/x86_64-linux-gnu -L/usr/local/lib
-H_INCLUDE = -I/usr/include -I$(INC_DIR)
+H_INCLUDE = -I/usr/include -I/usr/local/include -I$(INC_DIR)
 
 all: trace capture
 
@@ -23,7 +23,7 @@ capture: $(OBJFILES)
 
 
 clean:
-	rm $(BIN_DIR)/*
+	rm $(SRC_DIR)/*.o $(APP_DIR)/*.o
 
 $(OBJFILES): $(SRC_DIR)/%.o : $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS_DEBUG) $(H_INCLUDE) -c $< -o $@

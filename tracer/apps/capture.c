@@ -63,6 +63,8 @@ int main(int argc, char **argv)
             perf_map(fd, AUX_PAGES, DATA_PAGES);
             init_libipt();
             init_pkt_decoder();
+
+            init_sb_decoding();
            
             // Start child exec.
 			if (write(fds[1],"1", 1) != 1) {

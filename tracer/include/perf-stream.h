@@ -39,6 +39,8 @@ void *base, *data, *aux;
  */
 void *get_aux_begin();
 void *get_aux_end();
+void *get_data_begin();
+void *get_data_end();
 
 /** Init the perf_event_attr structure.
  *
@@ -63,8 +65,8 @@ int perf_event_open(pid_t pid);
  * 2^AUX_PAGES are mapped in for the aux section.
  * 2^DATA_PAGES are mapped in for the aux section. 
  */
-#define AUX_PAGES 2
-#define DATA_PAGES 2
+#define AUX_PAGES 4
+#define DATA_PAGES 4
 
 /** Create memory for AUX, DATA, and perf_event_mmap page.
  *
@@ -83,5 +85,4 @@ int perf_event_open(pid_t pid);
  *   e.g. to create a aux data section with two pages, set aux_n = 1.
  */
 void perf_map(int fd, size_t data_n, size_t aux_n);
-
 #endif

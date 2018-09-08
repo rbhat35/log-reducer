@@ -2,10 +2,38 @@
 #include <stdio.h>
 #include "pevent.h"
 #include "perf-stream.h"
+#include "libipt-sb.h"
 
 struct pev_config pv_config;
+struct pt_sb_pevent_config sb_pv_config;
+struct pt_sb_decoder_config sb_d_config;
 
 uint8_t *stream = NULL;
+
+
+int init_sb_decoding() {
+    int err = 0;
+    struct pt_sb_session *session = NULL;
+
+    // Create a new session. 
+    session = pt_sb_alloc(NULL);
+    if (!session)
+        fail("Failed to initialize session.\n");
+
+    // Intialize decoder configuration.
+    memset(&sb_pv_config, 0, sizeof(struct pt_sb_pevent_config));
+    sb_pv_config.size = sizeof(struct pt_sb_pevent_config);
+
+    //Allocate a new sideband decoder for this session.
+    memset(&sb_pv_config, 0, sizeof(struct pt_sb_pevent_config));
+    sb_pv_config.size = sizeof(struct pt_sb_pevent_config);
+
+    err = pt_sb_alloc_pevent_decoder(session, &sb_pv_config, get_data_begin(), header->data_size);
+    if (err)
+        fail("Failed to initialize sideband decoder (%d).\n", err);
+
+    T_DEBUG("Sideband decoding initialized.\n");
+}
 
 int init_perf_pv() {
 
@@ -27,6 +55,8 @@ struct pev_event *read_data_pv() {
     event = malloc(sizeof(struct pev_event));
     
     rc = pev_read(event, stream, get_data_end(), &pv_config);
+
+
     if (rc < 0) {
         fail("Failed to read perf event. rc(%d)\n", rc);
     } else {
@@ -34,7 +64,7 @@ struct pev_event *read_data_pv() {
         stream += rc;
     }
 
-    printf("pev_event %u\n", event->type);
+    FILE * stdout_f = fdopen(1, "r+");
     fflush(stdout);
 
     return event;
