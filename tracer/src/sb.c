@@ -7,13 +7,15 @@
 struct pev_config pv_config;
 struct pt_sb_pevent_config sb_pv_config;
 struct pt_sb_decoder_config sb_d_config;
+struct pt_sb_session *session = NULL;
 
 uint8_t *stream = NULL;
 
 
 int init_sb_decoding() {
     int err = 0;
-    struct pt_sb_session *session = NULL;
+    uint8_t* data = NULL;
+    size_t size = 0;
 
     // Create a new session. 
     session = pt_sb_alloc(NULL);
@@ -27,12 +29,34 @@ int init_sb_decoding() {
     //Allocate a new sideband decoder for this session.
     memset(&sb_pv_config, 0, sizeof(struct pt_sb_pevent_config));
     sb_pv_config.size = sizeof(struct pt_sb_pevent_config);
-
-    err = pt_sb_alloc_pevent_decoder(session, &sb_pv_config, get_data_begin(), header->data_size);
+    data = get_data_begin();
+    size = header->data_size;
+    err = pt_sb_alloc_pevent_decoder(session, &sb_pv_config, data, size);
     if (err)
         fail("Failed to initialize sideband decoder (%d).\n", err);
 
     T_DEBUG("Sideband decoding initialized.\n");
+}
+
+
+int fetch_event() {
+    int err = 0;
+    char *filename = "test.dump";
+
+    /* Initalize decoders. */
+    err = pt_sb_init_decoders(session);
+    if (err)
+        fail("Failed to initialize decoders.\n");
+
+    FILE* f_out = fopen(filename, "w");
+    T_DEBUG("Fetching all records.");
+    err = pt_sb_dump(session, f_out, ptsbp_tsc | ptsbp_verbose, -1);
+    if (err) {
+        fail("Failed to dump sideband records.");
+    } else {
+        T_DEBUG("Finished fetching.\n");
+    }
+
 }
 
 int init_perf_pv() {

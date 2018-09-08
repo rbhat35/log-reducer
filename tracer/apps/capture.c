@@ -64,7 +64,6 @@ int main(int argc, char **argv)
             init_libipt();
             init_pkt_decoder();
 
-            init_sb_decoding();
            
             // Start child exec.
 			if (write(fds[1],"1", 1) != 1) {
@@ -80,12 +79,14 @@ int main(int argc, char **argv)
                 sleep(1);
                 DEBUG("Waiting for data. (%d)\n", error);
             }
-
+            
             init_perf_pv();
+            init_sb_decoding();
+            fetch_event();
 
             /* Read perf data. */
-            while (1)
-                read_data_pv();
+            //while (1)
+            //    read_data_pv();
     }
 
     pt_pkt_free_decoder(decoder);
