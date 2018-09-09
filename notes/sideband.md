@@ -212,3 +212,88 @@ will eventually be the buffer in which the parsing is completed. Once the decode
 
 3. To decoder sideband information, we need to leverage the fetch, apply functions. 
 
+
+
+Fetching and Applying Sideband Events
+===
+
+
+__Fetching__:
+The sideband decoder internally maintains a private data structure called `struct pt_sb_pevent_priv *priv`, which is responsible
+for maintaining the state of the decoding of the internal perf data. It's primary fields are the 
+
+* current, next -- These are the current position in the stream in the next position in the stream.
+* context, `next_context` - This is the context of the current process
+* event -- This is the current perf event.
+* location - The current code location estimated from prevous events. 
+
+
+Sideband events are fetched from the aux band using `pt_sb_pevent_fetch`, which internally calls `pev_read()`.  When a fetch is 
+called, priv data structure is updated such that the fetched event becomes the current event.
+
+__Applyying__:
+
+The apply process is more involved then fetching. The input paramers to apply are the following:
+
+1. The decoding session.
+2. A pointer to a pt\_image.
+3. The event to be applied to the decoders.
+4. A reference to the priv data structure.
+
+
+__Initial fetch call.__
+
+The first check is to check if the last record fetched occured prior to the event passed as parameter 3. If this is true, 
+then we need to maintain the correct sequential order. In order to achieve this, we apply the current record prior to the
+event record. Additionally, we verify this is not the last record. 
+
+```C
+    record = &priv->event;
+    if ((priv->current != priv->next) &&
+            (!record->sample.time || (record->sample.tsc <= event->tsc)))
+                    return pt_sb_pevent_apply_event_record(session, image, priv,
+                    record);
+```                    
+
+__Applying the Event Record__:
+
+When an event record is applied, `pt_sb_pevent_apply_event_record` is called with the same parameters as the original 
+fetch call. However, this call does not do any of the sequential checking that occurs in the public fetch call. It 
+simply uses a large dispatcher, and choose the decoder based on what the perf record type is. We described what occurs
+based on which type of record is being decoded below.
+
+
+
+__PERF\_ITRACE\_START__:
+
+This record type will essentially always be the first record in the sideband. When this record occurs, `pt_sb_pevent_itrace_start`
+will be called. Overall, this function is simply a wrapper function that updates the `priv` dat structure and  We described what occurs
+based on which type of record is being decoded below. Additionally it has two additional steps, which prepare for a context switch to
+the pid that created the record, which essentially sets the correct context in  `priv`.
+
+
+__PERF\_RECORD\_COMM (exec):__
+
+On exec record, we do the following:
+
+1. Create a new image that will ahve kernel sections initialized, but will otherwise be empty. The image will get populated
+   using map records later on. 
+   2. Next, We setup a switch to the next context. 
+
+
+__MMAP Records__:
+
+When a mmap record occurs, this is where the image is created. 
+
+
+
+
+1. We check what type of file is being mapped in based on the file name.
+
+2. We call `pt_sb_ctx_mmap`, which is what will maintain the image under this context. First, this function gets the image
+for the curent context. Next, assuming we are not using a image cache, `pt_image_add_file` is called, which is defined in `pt_image.c`,
+which will add it to the image data structure for this process. 
+
+
+
+

@@ -30,7 +30,7 @@
 #include "pt_section.h"
 #include "pt_asid.h"
 #include "pt_image_section_cache.h"
-
+#include "common.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -536,6 +536,7 @@ static int pt_image_fetch_section(struct pt_image *image,
 		return -pte_internal;
 
 	start = &image->sections;
+    T_DEBUG("Traversing sections!\n");
 	for (list = start; *list;) {
 		struct pt_mapped_section *msec;
 		struct pt_section_list *elem;
@@ -543,6 +544,8 @@ static int pt_image_fetch_section(struct pt_image *image,
 
 		elem = *list;
 		msec = &elem->section;
+
+        T_DEBUG("Searching for vaddr  (%lu)\n", vaddr);
 
 		errcode = pt_image_check_msec(msec, asid, vaddr);
 		if (errcode < 0) {
@@ -563,6 +566,7 @@ static int pt_image_fetch_section(struct pt_image *image,
 		return 0;
 	}
 
+    T_DEBUG("NO sections!\n");
 	return -pte_nomap;
 }
 
@@ -574,12 +578,15 @@ int pt_image_read(struct pt_image *image, int *isid, uint8_t *buffer,
 	struct pt_section *section;
 	int errcode, status;
 
-	if (!image || !isid)
+	if (!image || !isid) {
+        T_DEBUG("Image is not set!\n");
 		return -pte_internal;
+    }
 
 	errcode = pt_image_fetch_section(image, asid, addr);
 	if (errcode < 0) {
-		if (errcode != -pte_nomap)
+        T_DEBUG("Error fetching image session! (%d)\n", errcode);
+		if (errcode != -pte_nomap) 
 			return errcode;
 
 		return pt_image_read_callback(image, isid, buffer, size, asid,
@@ -587,8 +594,10 @@ int pt_image_read(struct pt_image *image, int *isid, uint8_t *buffer,
 	}
 
 	slist = image->sections;
-	if (!slist)
+	if (!slist) {
+        T_DEBUG("No sections found!\n");
 		return -pte_internal;
+    }
 
 	*isid = slist->isid;
 	msec = &slist->section;

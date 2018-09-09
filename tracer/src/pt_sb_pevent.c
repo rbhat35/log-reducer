@@ -1668,7 +1668,7 @@ static int pt_sb_pevent_fetch_callback(struct pt_sb_session *session,
 {
 	int errcode;
 
-    T_DEBUG("Fetching next record!.\n");
+    T_DEBUG("Fetching callback invoked!.\n");
 	errcode = pt_sb_pevent_fetch(tsc, (struct pt_sb_pevent_priv *) priv);
 	if ((errcode < 0) && (errcode != -pte_eos))
 		pt_sb_pevent_error(session, errcode,

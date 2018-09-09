@@ -1,5 +1,4 @@
 
-#include <intel-pt.h>
 #include "libipt-sb.h"
 #include "pt-decoder.h"
 #include "perf-stream.h"
@@ -23,7 +22,6 @@ int handle_events(int status) {
     }
 }
 
-
 void print_insns() {
     int err = 0;
     int status = 0;
@@ -41,6 +39,9 @@ void print_insns() {
         if (err) {
             T_DEBUG("Insn err(%d)\n", pte_no_enable);
             fail("Failed to get next instruction. err(%d)\n", err);
+        } else { 
+            T_DEBUG("Received next instruction! (%d)\n", err);
+
         }
     }
 }
@@ -76,7 +77,9 @@ void add_image_insn(pid_t pid, struct pt_sb_session *session) {
         fail("Failed to get context for pid(%lu): err(%lu)\n", pid, err);
 
     // Verify the image has been created for this pid.
-    if(!context->image)
+    struct pt_image * image;
+    image = pt_sb_ctx_image(context);
+    if(!image)
         fail("The image has not been created for pid (%lu) \n", context->pid);
 
     err = pt_insn_set_image(insn_decoder, context->image);

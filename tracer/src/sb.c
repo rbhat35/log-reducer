@@ -41,8 +41,18 @@ int init_sb_decoding() {
     T_DEBUG("Sideband decoding initialized.\n");
 }
 
-
 int fetch_event() {
+    int err = 0;
+    /* Initalize decoders. */
+    err = pt_sb_init_decoders(session);
+    if (err)
+        fail("Failed to initialize decoders.\n");
+    T_DEBUG("Fetching Event!\n");
+
+    sb_d_config.fetch(session, -1, sb_d_config.priv);
+}
+
+int print_event() {
     int err = 0;
     char *filename = "test.dump";
 

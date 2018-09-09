@@ -33,7 +33,7 @@
 #include "pt_compiler.h"
 
 #include "intel-pt.h"
-
+#include "common.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -305,6 +305,7 @@ static int pt_insn_start(struct pt_insn_decoder *decoder, int status)
 	if (status < 0)
 		return status;
 
+    T_DEBUG("Setting decoder's status to: %d\n", status);
 	decoder->status = status;
 
 	if (!(status & pts_ip_suppressed))
@@ -333,6 +334,7 @@ int pt_insn_sync_forward(struct pt_insn_decoder *decoder)
 	pt_insn_reset(decoder);
 
 	status = pt_qry_sync_forward(&decoder->query, &decoder->ip);
+    T_DEBUG("Sync query with pt data status(%d)\n", status);
 
 	return pt_insn_start(decoder, status);
 }
@@ -1286,6 +1288,7 @@ static int pt_insn_msec_lookup(struct pt_insn_decoder *decoder,
 int pt_insn_next(struct pt_insn_decoder *decoder, struct pt_insn *uinsn,
 		 size_t size)
 {
+    T_DEBUG("Getting next instruction!\n");
 	const struct pt_mapped_section *msec;
 	struct pt_insn_ext iext;
 	struct pt_insn insn, *pinsn;
@@ -1300,11 +1303,14 @@ int pt_insn_next(struct pt_insn_decoder *decoder, struct pt_insn *uinsn,
 	 * trace or process a tracing enabled event.
 	 */
 	if (!decoder->enabled) {
+        T_DEBUG("Decoder is not enabled: status(%d)!\n", decoder->status);
 		if (decoder->status & pts_eos)
 			return -pte_eos;
 
 		return -pte_no_enable;
-	}
+	} else {
+        T_DEBUG("Decoder has been enabled!\n");
+    }
 
 	pinsn = size == sizeof(insn) ? uinsn : &insn;
 
@@ -1334,7 +1340,9 @@ int pt_insn_next(struct pt_insn_decoder *decoder, struct pt_insn *uinsn,
 	 */
 	pinsn->isid = isid;
 
+    T_DEBUG("Calling ins_decode_cached!\n");
 	status = pt_insn_decode_cached(decoder, msec, pinsn, &iext);
+    T_DEBUG("ins_decode_cached rc(%d)\n", status);
 	if (status < 0) {
 		/* Provide the incomplete instruction - the IP and mode fields
 		 * are valid and may help diagnose the error.
@@ -1346,6 +1354,7 @@ int pt_insn_next(struct pt_insn_decoder *decoder, struct pt_insn *uinsn,
 	/* Provide the decoded instruction to the user.  It won't change during
 	 * event processing.
 	 */
+    T_DEBUG("Calling insn_to_user!\n");
 	status = insn_to_user(uinsn, size, pinsn);
 	if (status < 0)
 		return status;

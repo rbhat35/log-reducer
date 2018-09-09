@@ -15,6 +15,8 @@
 #include "pt-decoder.h"
 #include "sb.h"
 
+extern struct pt_insn_decoder *insn_decoder;
+
 int main(int argc, char **argv) 
 {
     /* Setup perf to stream PT events. */
@@ -63,6 +65,7 @@ int main(int argc, char **argv)
             perf_map(fd, AUX_PAGES, DATA_PAGES);
             init_libipt();
             init_pkt_decoder();
+            init_insn_decoder();
 
            
             // Start child exec.
@@ -75,14 +78,18 @@ int main(int argc, char **argv)
             waitpid(pid, NULL, 0);
             close(fds[1]);
 
-            while(error = pt_pkt_sync_forward(decoder)) {
+            while((error = pt_insn_sync_forward(insn_decoder)) < 0) {
                 sleep(1);
                 DEBUG("Waiting for data. (%d)\n", error);
             }
+
             
             init_perf_pv();
             init_sb_decoding();
             fetch_event();
+            //add_image_insn(pid,  get_session());
+
+            //print_insns();
 
             /* Read perf data. */
             //while (1)

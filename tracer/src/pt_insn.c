@@ -30,7 +30,7 @@
 #include "pt_ild.h"
 #include "pt_image.h"
 #include "pt_compiler.h"
-
+#include "common.h"
 #include "intel-pt.h"
 
 
@@ -310,15 +310,20 @@ int pt_insn_decode(struct pt_insn *insn, struct pt_insn_ext *iext,
 		   struct pt_image *image, const struct pt_asid *asid)
 {
 	int size, errcode;
+    T_DEBUG("Decoding instruction.\n");
 
-	if (!insn)
+	if (!insn) {
+        T_DEBUG("Instruction is NULL.\n");
 		return -pte_internal;
+    }
 
 	/* Read the memory at the current IP in the current address space. */
 	size = pt_image_read(image, &insn->isid, insn->raw, sizeof(insn->raw),
 			     asid, insn->ip);
-	if (size < 0)
+	if (size < 0) {
+        T_DEBUG("Error reading image!\n");
 		return size;
+    }
 
 	/* We initialize @insn->size to the maximal possible size.  It will be
 	 * set to the actual size during instruction decode.
