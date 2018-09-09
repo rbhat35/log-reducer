@@ -4,13 +4,16 @@
 #include "perf-stream.h"
 #include "libipt-sb.h"
 
-struct pev_config pv_config;
-struct pt_sb_pevent_config sb_pv_config;
-struct pt_sb_decoder_config sb_d_config;
+
+uint8_t *stream_sb = NULL;
 struct pt_sb_session *session = NULL;
 
-uint8_t *stream = NULL;
 
+struct pt_sb_session *get_session(){return session;}
+
+//int get_image(pid_t) {
+//    return -1;
+//}
 
 int init_sb_decoding() {
     int err = 0;
@@ -68,24 +71,23 @@ int init_perf_pv() {
     pv_config.time_zero = header->time_zero;
 }
 
+
 struct pev_event *read_data_pv() {
     struct pev_event *event = NULL;
     int rc = 0;
 
-    if (!stream) {
-        stream = get_data_begin();
+    if (!stream_sb) {
+        stream_sb = get_data_begin();
     }
 
     event = malloc(sizeof(struct pev_event));
-    
-    rc = pev_read(event, stream, get_data_end(), &pv_config);
-
+    rc = pev_read(event, stream_sb, get_data_end(), &pv_config);
 
     if (rc < 0) {
         fail("Failed to read perf event. rc(%d)\n", rc);
     } else {
         T_DEBUG("perf event size: rc(%d)\n", rc);
-        stream += rc;
+        stream_sb += rc;
     }
 
     FILE * stdout_f = fdopen(1, "r+");

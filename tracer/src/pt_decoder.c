@@ -1,36 +1,94 @@
-#include "pt-decoder.h"
-#include <intel-pt.h>
-#include <libipt-sb.h>
-#include "perf-stream.h"
 
-//void init_sb_decoder() {
-//
-//    struct pt_sb_pevent_config sb_config;
-//    struct pt_sb_session *sb_session = NULL;
-//    int error = NULL;
-//    memset(&sb_config, 0, sizeof(sb_config));
-//
-//    // Configure perf sb config.
-//    sb_config.size = sizeof(sb_config);
-//    sb_config.filename = "sb.data";
-//    sb_config.begin = get_data_begin();
-//    sb_config.time_shift = header->time_shift;
-//    sb_config.time_mult = header->time_mult;
-//    sb_config.time_zero = header->time_zero;
-//    //sb_config.sample_type = header->sample_type;
-//    // Create a new pt sb session.
-//    sb_session = pt_sb_alloc(NULL);
-//    if(!sb_session)
-//        fail("Failed to create sideband session\n.");
-//
-//    // Create pevent_decoder.
-//    error = pt_sb_alloc_pevent_decoder(sb_session, &sb_config);
-//    if (error) {
-//        T_DEBUG("ptse_trace_lost: %d\n", pte_invalid);
-//        fail("Failed to allocate sb decoder (err: %d)\n", error);
-//    }
-//}
-//
+#include <intel-pt.h>
+#include "libipt-sb.h"
+#include "pt-decoder.h"
+#include "perf-stream.h"
+#include "pt_sb_context.h"
+#include <stddef.h>
+#include "sb.h"
+
+struct pt_insn_decoder;
+struct pt_insn_decoder *insn_decoder = NULL;
+
+int handle_events(int status) {
+
+    while (status & pts_event_pending) {
+        struct pt_event event;
+        status = pt_insn_event(insn_decoder, &event, sizeof(event));
+
+        T_DEBUG("Event status (%d)\n", status);
+
+        if (status < 0)
+            break;
+    }
+}
+
+
+void print_insns() {
+    int err = 0;
+    int status = 0;
+
+    for (;;) {
+
+        status = handle_events(1);
+        if (status < 0) {
+            fail("Status: %d", status);
+        }
+        struct pt_insn insn;
+        memset(&insn, 0, sizeof(insn));
+
+        err = pt_insn_next(insn_decoder, &insn, sizeof(insn));
+        if (err) {
+            T_DEBUG("Insn err(%d)\n", pte_no_enable);
+            fail("Failed to get next instruction. err(%d)\n", err);
+        }
+    }
+}
+
+void init_insn_decoder() {
+    int err;
+
+    // Create a new insn decoder. 
+    insn_decoder = pt_insn_alloc_decoder(&config);
+    if(!insn_decoder)
+        fail("Failed to create insn decoder.\n");
+
+    T_DEBUG("Instruction decoder initialized.\n");
+}
+
+struct pt_insn_decoder *get_insn_decoder(){return insn_decoder;}
+
+/* 
+ * For the process with pid  add the image beinging maintained
+ * from the sideband session to the instruction decoder.
+ */
+void add_image_insn(pid_t pid, struct pt_sb_session *session) {
+    int err;
+    struct pt_sb_context *context = NULL;
+
+    if (!session)
+        fail("Session is invalid!\n");
+
+    // Get the context for this pid. 
+    context = malloc(sizeof(struct pt_sb_context));
+    err = pt_sb_get_context_by_pid(&context, session, pid);
+    if (err)
+        fail("Failed to get context for pid(%lu): err(%lu)\n", pid, err);
+
+    // Verify the image has been created for this pid.
+    if(!context->image)
+        fail("The image has not been created for pid (%lu) \n", context->pid);
+
+    err = pt_insn_set_image(insn_decoder, context->image);
+    if (err)
+        fail("Failed to add image to insn_decoder.\n");
+
+    // Add the image for this process to the instruction decoder.
+    pid_t c_pid = context->pid; 
+    T_DEBUG("Successfully added image for pid (%lu)(%lu) \n", pid, c_pid);
+}
+
+
 struct pt_packet* pt_packet_new() {
     struct pt_packet *pkt = NULL;
 
@@ -40,6 +98,7 @@ struct pt_packet* pt_packet_new() {
 }
 
 
+//TODO. This function can probably be internal.
 void init_libipt() {
     memset(&config, 0, sizeof(config));
     config.size = sizeof(config);
@@ -49,12 +108,12 @@ void init_libipt() {
     config.end = get_aux_end();
 }
 
+
 void init_pkt_decoder() {
     decoder = pt_pkt_alloc_decoder(&config);
 
-    if(!decoder) {
+    if(!decoder)
         fail("Failed to initialize packet decoder.\n");
-    }
 
     T_DEBUG("Packet decoder initialized.\n");
 }

@@ -5,6 +5,7 @@
 #include "common.h"
 
 void init_sb_decoder();
+void init_insn_decoder();
 
 /** libipt configuration options.
  * 
