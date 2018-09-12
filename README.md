@@ -6,6 +6,7 @@ The tracing system is built on top of libaudit
 ```shell
 sudo apt-get install python-audit auditd
 cd tracer
+mkdir bin
 make trace
 ```
 

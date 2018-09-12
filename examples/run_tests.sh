@@ -16,5 +16,3 @@ sudo auditctl -D
 run_autrace "./readloop 256.txt" "readloop_256.audit"
 run_autrace "./readloop 1024.txt" "readloop_1024.audit" 
 
-# Sample provenance graph for find
-run_autrace "/usr/bin/find ." "find.audit"
