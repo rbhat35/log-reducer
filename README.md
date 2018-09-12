@@ -53,6 +53,43 @@ cd parser
 python parser.py ../examples/readloop_256.audit
 ```
 
+```shell
+DEBUG:__main__:Parsing syscall: execve
+DEBUG:modules.filemap:(27430, 0 = 0)
+INFO:modules.filemap:inode: 0
+1536767036.242.25336,27430:"/home/jallen309/log-compression-project/examples/readloop",execve,0,"./readloop"
+DEBUG:__main__:Parsing syscall: open
+DEBUG:modules.filemap:(27430, 3 = 0x1fc0c6a)
+INFO:modules.filemap:inode: 0x1fc0c6a
+1536767036.262.25337,27430:"/home/jallen309/log-compression-project/examples/readloop",open,0x1fc0c6a,"/etc/ld.so.cache"
+DEBUG:__main__:Parsing syscall: close
+INFO:modules.filemap:inode: 0x1fc0c6a
+1536767036.262.25338,27430:"/home/jallen309/log-compression-project/examples/readloop",close,0x1fc0c6a,"/etc/ld.so.cache"
+DEBUG:__main__:Parsing syscall: open
+DEBUG:modules.filemap:(27430, 3 = 0x33000a9)
+INFO:modules.filemap:inode: 0x33000a9
+1536767036.262.25339,27430:"/home/jallen309/log-compression-project/examples/readloop",open,0x33000a9,"/lib/x86_64-linux-gnu/libc.so.6"
+DEBUG:__main__:Parsing syscall: read
+INFO:modules.filemap:inode: 0x33000a9
+1536767036.262.25340,27430:"/home/jallen309/log-compression-project/examples/readloop",read,0x33000a9,"/lib/x86_64-linux-gnu/libc.so.6"
+DEBUG:__main__:Parsing syscall: close
+INFO:modules.filemap:inode: 0x33000a9
+1536767036.262.25341,27430:"/home/jallen309/log-compression-project/examples/readloop",close,0x33000a9,"/lib/x86_64-linux-gnu/libc.so.6"
+DEBUG:__main__:Parsing syscall: open
+DEBUG:modules.filemap:(27430, 3 = 0xc206d4)
+INFO:modules.filemap:inode: 0xc206d4
+1536767036.262.25342,27430:"/home/jallen309/log-compression-project/examples/readloop",open,0xc206d4,"256.txt"
+DEBUG:__main__:Parsing syscall: read
+INFO:modules.filemap:inode: 0xc206d4
+1536767036.262.25343,27430:"/home/jallen309/log-compression-project/examples/readloop",read,0xc206d4,"256.txt"
+DEBUG:__main__:Parsing syscall: read
+INFO:modules.filemap:inode: 0xc206d4
+1536767036.262.25344,27430:"/home/jallen309/log-compression-project/examples/readloop",read,0xc206d4,"256.txt"
+DEBUG:__main__:Parsing syscall: read
+INFO:modules.filemap:inode: 0xc206d4
+1536767036.262.25345,27430:"/home/jallen309/log-compression-project/examples/readloop",read,0xc206d4,"256.txt"
+```
+
 
 The final step is to insert the data into Neo4j. To do this run the following 
 command:
@@ -72,3 +109,14 @@ Created 11 relationships, Set 22 properties
 
 Finally, you can view the graph visually by going to http://143.215.130.71:7474/browser/
 in a browser. A tutorial on how to visualize the graph can be found here (https://neo4j.com/developer/guide-neo4j-browser/).
+
+
+Tracing a new Program
+===
+
+The trace a program you can run the command `./example.trace.sh "<path to file> <arguments>" output file. For example, to trace the 
+program `ls` using the command line parameter `-h`, the command below would be used.. The output would be saved to ls.audit.
+
+```shell
+./examples/trace.sh "/bin/ls -h" ls.audit
+```
