@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import auparse
 import audit
+import logging
 import sys
 import os
 from os import path
@@ -8,6 +9,9 @@ import json
 from collections import defaultdict
 
 from modules import FileMap, Stream, Event
+
+log = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 class ParseError(Exception):
     pass
@@ -30,6 +34,7 @@ def get_subject(au):
     return (subject, pid, exe)
 
 class Parser(object):
+    first = True
 
     def __init__(self):
         self.fmap = FileMap()
@@ -53,8 +58,12 @@ class Parser(object):
         sysnum = au.find_field('syscall')
         self.syscall = sys_table[sysnum]
 
-        print self.syscall
+        #XXX. First syscall is the close() before the execve() for the tracing.
+        if self.first:
+            self.first = False
+            return
 
+        log.debug("Parsing syscall: {0}".format(self.syscall))
         if self.syscall in ['open', 'execve']:
             event = self.handle_open(au)
             #event = (ts, subject, self.syscall, resource, i_map[resource])
@@ -149,7 +158,7 @@ class Parser(object):
 
         inode = self.fmap.get_inode(pid, fd)
         filename = self.fmap.ino2name(inode)
-        self.fmap.del_file(pid, fd)
+        #self.fmap.del_file(pid, fd)
 
         event = Event(ts, subject, self.syscall, inode, filename)
         self.out_flow.write(event)
