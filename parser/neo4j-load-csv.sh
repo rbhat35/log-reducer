@@ -23,6 +23,9 @@ CYPHER_ARGS="-a $NEO4J_SERVER -u neo4j -p theianeo4j1"
 
 INPUT_FILE='backwards.csv'
 
+
+rm /data/neo4j-csvs/*.csv
+
 # Get list of CSV files
 #for file in $root/backward-edge-*; do
 #    if [[ -f $file ]]; then
