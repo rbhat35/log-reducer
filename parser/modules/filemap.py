@@ -11,7 +11,7 @@ class FileMap(object):
 
     def __init__(self):
         self.imap = defaultdict(lambda: dict(self.std))
-        self.fmap = self.std
+        self.fmap = self.std_r
 
     def get_inode(self, pid, fd):
         """Get inode value for pid, fd pair."""
