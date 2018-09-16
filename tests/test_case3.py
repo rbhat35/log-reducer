@@ -1,18 +1,20 @@
+import os
+
 # Forward Trackability Test Case for High Fidelity Paper
 # The two events, e1 and e2, produced by the two calls to funcU()
 #   cannot be merged, since foward trackability is not preserved
 #   with respect to funcZ()
 
 def funcU():
-    file = open("test_case3.txt", "r+")
-    file.write("Hello Jane \n")
-    file.close()
+    file = os.open("test_case3.txt", os.O_RDWR)
+    os.write(file, "Hello Jane \n")
+    os.close(file)
 
 
 def funcZ():
-    file = open("test_case3.txt", "r+")
-    data = file.read()
-    file.close()
+    file = os.open("test_case3.txt", os.O_RDWR)
+    data = os.read(file, 1000)
+    os.close(file)
 
 if __name__ == '__main__':
     funcU()
