@@ -70,8 +70,8 @@ class Parser(object):
         elif self.syscall in ['read', 'readv']:
             event = self.handle_read(au)
         elif self.syscall in ['write', 'writev']:
-            event = 'not used.'
-            #event = self.handle_write(au)
+            #event = 'not used.'
+            event = self.handle_write(au)
         elif self.syscall in ['close']:
             event = self.handle_close(au)
         else:
@@ -133,7 +133,7 @@ class Parser(object):
         subject, pid, _ = get_subject(au)
 
         inode = self.fmap.get_inode(pid, fd)
-        name = self.ino2name(inode)
+        name = self.fmap.ino2name(inode)
         event = Event(ts, subject, self.syscall, self.fmap.get_inode(pid, fd), name)
         self.out_flow.write(event)
 
