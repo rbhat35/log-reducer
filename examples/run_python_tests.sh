@@ -13,6 +13,8 @@ run_autrace() {
 
 sudo auditctl -D
 # Demonstrates the affect of loops on provenance graph.
+run_autrace "/usr/bin/python ../tests/test_case1.py" "test_case1.audit"
+run_autrace "/usr/bin/python ../tests/test_case2.py" "test_case2.audit"
 run_autrace "/usr/bin/python ../tests/test_case3.py" "test_case3.audit"
 run_autrace "/usr/bin/python ../tests/test_case4.py" "test_case4.audit"
 # run_autrace "./readloop 1024.txt" "readloop_1024.audit" 
