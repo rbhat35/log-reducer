@@ -5,20 +5,20 @@ import os
 # Thus a merge should be performed
 
 def funcZ2():
-    file = os.open("test_case5_U.txt", os.O_RDWR)
+    file = os.open("../tests/test_case5_U.txt", os.O_RDWR)
     os.write(file, "Hello Jane \n")
     os.close(file)
 
 def funcV():
-    file = os.open("test_case5_U.txt", os.O_RDWR)
+    file = os.open("../tests/test_case5_U.txt", os.O_RDWR)
     data = os.read(file, 1000)
     os.close(file)
 
-    file = os.open("test_case5_U.txt", os.O_RDWR)
+    file = os.open("../tests/test_case5_U.txt", os.O_RDWR)
     data = os.read(file, 1000)
     os.close(file)
 
-    file = os.open("test_case5_Z1.txt", os.O_RDWR)
+    file = os.open("../tests/test_case5_Z1.txt", os.O_RDWR)
     os.write(file, "Hello Jane \n")
     os.close(file)
 

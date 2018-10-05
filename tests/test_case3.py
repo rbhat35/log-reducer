@@ -6,13 +6,13 @@ import os
 #   with respect to funcZ()
 
 def funcU():
-    file = os.open("test_case3.txt", os.O_RDWR)
+    file = os.open("../tests/test_case3.txt", os.O_RDWR)
     os.write(file, "Hello Jane \n")
     os.close(file)
 
 
 def funcZ():
-    file = os.open("test_case3.txt", os.O_RDWR)
+    file = os.open("../tests/test_case3.txt", os.O_RDWR)
     data = os.read(file, 1000)
     os.close(file)
 
