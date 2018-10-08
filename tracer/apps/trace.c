@@ -56,6 +56,8 @@ static int insert_rule(int audit_fd, const char *field)
 		rc |= audit_rule_syscallbyname_data(rule, "write");
 		rc |= audit_rule_syscallbyname_data(rule, "writev");
 		rc |= audit_rule_syscallbyname_data(rule, "open");
+		rc |= audit_rule_syscallbyname_data(rule, "exit");
+		rc |= audit_rule_syscallbyname_data(rule, "exit_group");
 		rc |= audit_rule_syscallbyname_data(rule, "close");
 		rc |= audit_rule_syscallbyname_data(rule, "openat");
 		rc |= audit_rule_syscallbyname_data(rule, "creat");
