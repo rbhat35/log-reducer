@@ -28,7 +28,7 @@ def parser():
     b_row = next(b, "DONE")
 
     while f_row is not "DONE" or b_row is not "DONE":
-        if b_row is "DONE" or (f_row is not "DONE" and float(f_row[0][:f_row[0].rfind(".")]) <= float(b_row[0][:b_row[0].rfind(".")]):
+        if b_row is "DONE" or (f_row is not "DONE" and float(f_row[0][:f_row[0].rfind(".")]) <= float(b_row[0][:b_row[0].rfind(".")])):
             v = f_row[1]
             u = f_row[4]
             sys_call = f_row[2]
