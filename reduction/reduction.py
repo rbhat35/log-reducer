@@ -16,9 +16,9 @@ def generate_parents(node, parents):
 def check_overlap(start_1, end_1, start_2, end_2):
     # print start_1, end_1, start_2, end_2
     if start_1 <= start_2:
-        print "1"
+        # print "1"
         if end_1 <= start_2:
-            print "2"
+            # print "2"
             return True
     else:
         if end_2 <= start_1:
@@ -57,25 +57,37 @@ def backward_check(e_, e, u, parents, events):
 def merge(e_, e, events):
     lower_limit = min(events[e_][0], events[e][0])
     upper_limit = max(events[e_][1], events[e][1])
-
-    print "Please Merge --", e_, " and ", e, "\n"
-    print "with upper limit as %.04f" % upper_limit
-    print "with lower limit as %.04f" % lower_limit
+    #
+    # print "Please Merge --", e_, " and ", e, "\n"
+    # print "with upper limit as %.07f" % upper_limit
+    # print "with lower limit as %.07f" % lower_limit
 
     return lower_limit, upper_limit
 
-def make_final_csv(events_final):
-    with open('reduced_output.csv', mode='w') as f:
-        employee_writer = csv.writer(f, delimiter=',')
-        for k, value in events_final.items():
-            k_list = list(k)
-            value_list = list(value)
-            l = k_list + value_list
-            employee_writer.writerow(l)
+def make_final_csv(events_final, csv_details):
+    with open('forwad-reduced.csv', mode='w') as f_forward:
+        forward_writer = csv.writer(f_forward, delimiter=',')
+        with open('backward-reduced.csv', mode='w') as f_backward:
+            backward_writer = csv.writer(f_backward, delimiter=',')
+            for k, value in events_final.items():
+                u, v, sys_call, id = k
+                time_start, time_end = value
+                time_start = "{:.5f}".format(time_start)
+                time_end = "{:.5f}".format(time_end)
+                first_col = csv_details[id][0]
+                fourth_col = csv_details[id][1]
+                tag = csv_details[id][2]
+                if tag == 'FORWARD':
+                    l = [first_col, v, sys_call, fourth_col, u, time_start, time_end]
+                    forward_writer.writerow(l)
+                else:
+                    l = [first_col, u, sys_call, fourth_col, v, time_start, time_end]
+                    backward_writer.writerow(l)
 
 def reduction():
-    parents, children, events = parser()
-    print events
+    # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
+    parents, children, events, csv_details = parser()
+    # print events
     stacks = defaultdict(list)
     # parents[v].append((u, sys_call, id))
     # children[u].append((v, sys_call, id))
@@ -101,7 +113,7 @@ def reduction():
             else:
                 stacks[(u, v, sys_call)].append(event)
 
-    make_final_csv(events_final)
+    make_final_csv(events_final, csv_details)
 
 
 
