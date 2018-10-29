@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trace="sudo /home/sanya/log-compression-project/tracer/bin/trace"
+trace="sudo /home/raghav/log-compression-project/tracer/bin/trace"
 
 run_autrace() {
     sudo auditctl -D
@@ -13,4 +13,5 @@ run_autrace() {
 
 sudo auditctl -D
 # Demonstrates the affect of loops on provenance graph.
-run_autrace "../c_tests/testCase1.out" "testCase1.audit"
+cd ../c_tests
+run_autrace "./testCase1 test.txt" "../examples/testCase1.audit"
