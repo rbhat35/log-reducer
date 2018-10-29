@@ -19,7 +19,7 @@ class ParseError(Exception):
 
 def get_ts(au):
     event = au.get_timestamp()
-    ts = "{0}.{1}.{2}".format(event.sec, event.milli, event.serial)
+    ts = "{0}.{1}:{2}".format(event.sec, event.milli, event.serial)
     return ts
 
 def get_rc(au):

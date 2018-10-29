@@ -1,5 +1,11 @@
 #!/bin/bash
 
+sudo service neo4j stop
+sudo rm -rf /var/lib/neo4j/data/databases/graph.db
+sudo service neo4j start
+
+sleep 10
+
 if [[ "$#" -ne 1 ]]; then
     echo "usage: ./neo4j-load-csv.sh data/csv-folder &> out"
     exit 2

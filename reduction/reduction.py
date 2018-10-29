@@ -65,7 +65,7 @@ def merge(e_, e, events):
     return lower_limit, upper_limit
 
 def make_final_csv(events_final, csv_details):
-    with open('forwad-reduced.csv', mode='w') as f_forward:
+    with open('forward-reduced.csv', mode='w') as f_forward:
         forward_writer = csv.writer(f_forward, delimiter=',')
         with open('backward-reduced.csv', mode='w') as f_backward:
             backward_writer = csv.writer(f_backward, delimiter=',')
