@@ -14,4 +14,4 @@ run_autrace() {
 sudo auditctl -D
 # Demonstrates the affect of loops on provenance graph.
 cd ../c_tests
-run_autrace "./testCase1 test.txt" "../examples/testCase1.audit"
+run_autrace "./testCase5 test.txt" "../examples/testCase.audit"

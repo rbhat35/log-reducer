@@ -12,7 +12,7 @@ make
 ./run_tests_c.sh
 
 cd ../parser
-python parser.py ../examples/testCase1.audit
+python parser.py ../examples/testCase.audit
 
 sleep 10
 
