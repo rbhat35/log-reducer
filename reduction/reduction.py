@@ -49,7 +49,6 @@ def backward_check(e_, e, u, parents, events):
     for parent in generate_parents(u, parents):
         u_parent = parent[0]
         sys_call = parent[1]
-        print "u_parent-------", u_parent
         id = parent[2]
         if check_overlap(lower_limit, upper_limit, events[(u_parent, u, sys_call, id)][0], events[(u_parent, u, sys_call, id)][1]) is False:
             # print "False Returned-Backward"
