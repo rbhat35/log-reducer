@@ -43,11 +43,13 @@ def forward_check(e_, e, v, children, events):
     return True
 
 def backward_check(e_, e, u, parents, events):
+    # print u, "nnn",parents, "nnn",events
     lower_limit = min(events[e_][1], events[e][1])
     upper_limit = max(events[e_][1], events[e][1])
     for parent in generate_parents(u, parents):
         u_parent = parent[0]
         sys_call = parent[1]
+        print "u_parent-------", u_parent
         id = parent[2]
         if check_overlap(lower_limit, upper_limit, events[(u_parent, u, sys_call, id)][0], events[(u_parent, u, sys_call, id)][1]) is False:
             # print "False Returned-Backward"
@@ -92,12 +94,11 @@ def reduction():
     # parents[v].append((u, sys_call, id))
     # children[u].append((v, sys_call, id))
     # events[(u, v, sys_call, id)] = (time_start, time_start)
-
     events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
     events_final = events
     # print events.values()
     for event, time_interval in events.items():
-        u, v, sys_call, _ = event
+        u, v, sys_call, id_ = event
         if len(stacks[(u, v, sys_call)]) == 0:
             stacks[(u, v, sys_call)].append(event)
         else:
@@ -108,6 +109,12 @@ def reduction():
                 events[candidate_event] = (lower_limit, upper_limit,) #the lower limit and upper
                 #limit gets updated for the same key as of the popped event
                 events_final[candidate_event] = (lower_limit, upper_limit,)
+                for i, parent in enumerate(parents[v]):
+                    if parent[2] == id_:
+                        del parents[v][i]
+                for i, child in enumerate(children[u]):
+                    if child[2] == id_:
+                        del children[u][i]
                 del events_final[event]
                 stacks[(u, v, sys_call)].append(candidate_event)
             else:
