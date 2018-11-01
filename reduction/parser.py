@@ -3,8 +3,8 @@ import string
 from collections import defaultdict, OrderedDict
 
 
-FORWARD_CSV_PATH = "/home/raghav/log-compression-project/parser/forward.csv"
-BACKWARD_CSV_PATH = "/home/raghav/log-compression-project/parser/backwards.csv"
+FORWARD_CSV_PATH = "/home/sanya/log-compression-project/parser/forward.csv"
+BACKWARD_CSV_PATH = "/home/sanya/log-compression-project/parser/backwards.csv"
 
 def read_csv(PATH):
     f_csvfile = open(PATH, 'rb')
