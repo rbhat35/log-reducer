@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     // Read 24 bytes at a time.
     do {
         bytes_read += rc;
-        rc = read(fd, buffer + bytes_read, 256);
+        rc = read(fd, buffer + bytes_read, 2060);
     } while (rc > 0);
 
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     // Read 24 bytes at a time.
     do {
         bytes_read += rc;
-        rc = read(fd, buffer + bytes_read, 256);
+        rc = read(fd, buffer + bytes_read, 2060);
     } while (rc > 0);
 
 }
