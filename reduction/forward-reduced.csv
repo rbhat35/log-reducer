@@ -1,5 +1,0 @@
-1541006672.211:6771340,"1906:""/home/sanya/log-compression-project/c_tests/testCase5""",open,0x1fc0704,/etc/ld.so.cache,6771340.00000,6771340.00000
-1541006672.211:6771342,"1906:""/home/sanya/log-compression-project/c_tests/testCase5""",open,0x33000a9,/lib/x86_64-linux-gnu/libc.so.6,6771342.00000,6771342.00000
-1541006672.211:6771343,"1906:""/home/sanya/log-compression-project/c_tests/testCase5""",read,0x33000a9,/lib/x86_64-linux-gnu/libc.so.6,6771343.00000,6771343.00000
-1541006672.211:6771347,"1906:""/home/sanya/log-compression-project/c_tests/testCase5""",open,0xc202d8,test.txt,6771347.00000,6771347.00000
-1541006672.211:6771348,"1906:""/home/sanya/log-compression-project/c_tests/testCase5""",read,0xc202d8,test.txt,6771348.00000,6771349.00000
