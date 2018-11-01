@@ -95,7 +95,6 @@ def reduction():
     # events[(u, v, sys_call, id)] = (time_start, time_start)
     events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
     events_final = events
-    # print events.values()
     for event, time_interval in events.items():
         u, v, sys_call, id_ = event
         if len(stacks[(u, v, sys_call)]) == 0:
@@ -117,8 +116,13 @@ def reduction():
                 del events_final[event]
                 stacks[(u, v, sys_call)].append(candidate_event)
             else:
+                print event
+                print candidate_event
+                print "Here"
                 stacks[(u, v, sys_call)].append(event)
-
+                print events_final
+                print stacks[(u, v, sys_call)]
+    print events_final
     make_final_csv(events_final, csv_details)
 
 
