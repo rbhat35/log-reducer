@@ -5,4 +5,5 @@
 -a always,exit -F arch=b64 -F uid=1002 -S open,openat  -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S read,readv   -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S write,writev -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S exit,exit_group -k prov
 #TODO: Add more rules. For now just tracking open, read, and writes.

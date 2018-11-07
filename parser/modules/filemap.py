@@ -16,13 +16,20 @@ class FileMap(object):
     def get_inode(self, pid, fd):
         """Get inode value for pid, fd pair."""
         key = "{0}:{1}".format(pid, fd)
-        return self.imap[pid][fd]
+
+        if str(fd) in self.std.keys():
+            return self.std[fd]
+        elif pid in self.imap and fd in self.imap[pid]:
+            return self.imap[pid][fd]
+        else:
+            log.debug("Failed to get inode for pid {0} fd {1}".format(pid, fd))
+            return None
 
     def add_file(self, pid, fd, fname, inode):
-        log.debug("({0}, {1} = {2})".format(pid, fd, inode))
-        self.imap[pid][fd]  = inode
+        log.debug("Inserting into filemap ({0}, {1} = {2})".format(pid, fd, inode))
+        print type(fd), type(pid)
+        self.imap[pid][fd] = inode
         self.fmap[inode] = fname
-
 
     def del_file(self, pid, fd):
         """Delete a file from filemap after it has been closed."""

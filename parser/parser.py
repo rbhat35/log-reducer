@@ -157,6 +157,9 @@ class Parser(object):
         #XXX. Delete the fd related to this file.
 
         inode = self.fmap.get_inode(pid, fd)
+        if not inode:
+            return
+
         filename = self.fmap.ino2name(inode)
         #self.fmap.del_file(pid, fd)
 
