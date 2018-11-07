@@ -27,7 +27,6 @@ class FileMap(object):
 
     def add_file(self, pid, fd, fname, inode):
         log.debug("Inserting into filemap ({0}, {1} = {2})".format(pid, fd, inode))
-        print type(fd), type(pid)
         self.imap[pid][fd] = inode
         self.fmap[inode] = fname
 
