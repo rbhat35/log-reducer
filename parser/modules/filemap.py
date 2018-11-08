@@ -36,4 +36,7 @@ class FileMap(object):
 
     def ino2name(self, inode):
         log.info("inode: {0}".format(inode))
-        return self.fmap[inode]
+        if inode in self.fmap:
+            return self.fmap[inode]
+        else:
+            return None

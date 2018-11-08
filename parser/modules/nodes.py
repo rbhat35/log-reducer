@@ -9,6 +9,13 @@ class Event(object):
         self.ino = ino
         self.fname = fname
 
+    def is_corrupted(self):
+       """ Verify the entry is not corrupted."""
+       if None not in [self.ts, self.subj, self.sc, self.ino, self.fname]:
+           return True
+       else:
+           return False
+
 
     def __str__(self):
 
