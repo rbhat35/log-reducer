@@ -10,10 +10,10 @@
 -a always,exit -F arch=b64 -F uid=1002 -S close -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S creat   -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S truncate -k prov
--a always,exit -F arch=b64 -F uid=1002 -S rename, renameat -k prov
--a always,exit -F arch=b64 -F uid=1002 -S unlink, unlinkat -k prov
--a always,exit -F arch=b64 -F uid=1002 -S mknod, mknodat -k prov
--a always,exit -F arch=b64 -F uid=1002 -S mkdir, mkdirat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S rename,renameat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S unlink,unlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S mknod,mknodat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S mkdir,mkdirat -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S rmdir -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S chdir -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S chown   -k prov
@@ -21,8 +21,8 @@
 -a always,exit -F arch=b64 -F uid=1002 -S fchownat -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S chmod -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S fchmodat   -k prov
--a always,exit -F arch=b64 -F uid=1002 -S link, linkat -k prov
--a always,exit -F arch=b64 -F uid=1002 -S symlink, symlinkat -k prov
--a always,exit -F arch=b64 -F uid=1002 -S readlink, readlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S link,linkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S symlink,symlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S readlink,readlinkat -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S execve   -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S name_to_handle_at -k prov
