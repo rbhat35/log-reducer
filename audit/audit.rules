@@ -1,9 +1,28 @@
 # Contains audit rules that will be loaded by the audit daemon's init script
-# whenever the daemon is started. 
+# whenever the daemon is started.
 
 # syscall rules.
 -a always,exit -F arch=b64 -F uid=1002 -S open,openat  -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S read,readv   -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S write,writev -k prov
 -a always,exit -F arch=b64 -F uid=1002 -S exit,exit_group -k prov
-#TODO: Add more rules. For now just tracking open, read, and writes.
+
+-a always,exit -F arch=b64 -F uid=1002 -S close -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S creat   -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S truncate -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S rename, renameat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S unlink, unlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S mknod, mknodat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S mkdir, mkdirat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S rmdir -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S chdir -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S chown   -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S lchown -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S fchownat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S chmod -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S fchmodat   -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S link, linkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S symlink, symlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S readlink, readlinkat -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S execve   -k prov
+-a always,exit -F arch=b64 -F uid=1002 -S name_to_handle_at -k prov
