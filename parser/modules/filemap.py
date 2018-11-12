@@ -26,7 +26,6 @@ class FileMap(object):
             return None
 
     def add_file(self, pid, fd, fname, inode):
-        log.debug("Inserting into filemap ({0}, {1} = {2})".format(pid, fd, inode))
         self.imap[pid][fd] = inode
         self.fmap[inode] = fname
 
@@ -35,7 +34,6 @@ class FileMap(object):
         del self.imap[pid][fd]
 
     def ino2name(self, inode):
-        log.info("inode: {0}".format(inode))
         if inode in self.fmap:
             return self.fmap[inode]
         else:

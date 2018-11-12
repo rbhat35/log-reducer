@@ -63,7 +63,7 @@ class Parser(object):
             self.first = False
             return
 
-        log.debug("Parsing syscall: {0}".format(self.syscall))
+        #log.debug("Parsing syscall: {0}".format(self.syscall))
         if self.syscall in ['open', 'execve']:
             event = self.handle_open(au)
             #event = (ts, subject, self.syscall, resource, i_map[resource])

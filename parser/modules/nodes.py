@@ -11,7 +11,7 @@ class Event(object):
 
     def is_corrupted(self):
        """ Verify the entry is not corrupted."""
-       if None not in [self.ts, self.subj, self.sc, self.ino, self.fname]:
+       if None in [self.ts, self.subj, self.sc, self.ino, self.fname]:
            return True
        else:
            return False
