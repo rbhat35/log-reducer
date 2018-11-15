@@ -2,7 +2,7 @@ import csv
 import string
 from collections import defaultdict, OrderedDict
 
-from parser import parser
+from parser import parser, compareTo
 
 
 def generate_children(node, children):
@@ -14,15 +14,12 @@ def generate_parents(node, parents):
         yield i
 
 def check_overlap(start_1, end_1, start_2, end_2):
-    # print start_1, end_1, start_2, end_2
-    if start_1 <= start_2:
-        # print "1"
-        if end_1 <= start_2:
-            # print "2"
-            return True
-    else:
-        if end_2 <= start_1:
-            return True
+
+    if compareTo(start_1, start_2) and compareTo(end_1, start_2):
+        return True
+    elif compareTo(end_2, start_1):
+        return True
+
     return False
 
 
@@ -32,8 +29,14 @@ def forward_check(e_, e, v, children, events):
     # print "edge 1", e_, events[e_]
     # print "edge 2", e, events[e]
 
-    lower_limit = min(events[e_][0], events[e][0])
-    upper_limit = max(events[e_][0], events[e][0])
+    lower_limit = events[e][0]
+    upper_limit = events[e_][0]
+
+    if compareTo(events[e_][0], events[e][0]):
+        lower_limit = events[e_][0]
+    if compareTo(events[e_][0], events[e][0]):
+        upper_limit = events[e][0]
+
     for child in generate_children(v, children):
         v_child = child[0]
         sys_call = child[1]
@@ -44,8 +47,15 @@ def forward_check(e_, e, v, children, events):
 
 def backward_check(e_, e, u, parents, events):
     # print u, "nnn",parents, "nnn",events
-    lower_limit = min(events[e_][1], events[e][1])
-    upper_limit = max(events[e_][1], events[e][1])
+
+    lower_limit = events[e][1]
+    upper_limit = events[e_][1]
+
+    if compareTo(events[e_][1], events[e][1]):
+        lower_limit = events[e_][1]
+    if compareTo(events[e_][1], events[e][1]):
+        upper_limit = events[e][1]
+
     for parent in generate_parents(u, parents):
         u_parent = parent[0]
         sys_call = parent[1]
@@ -56,8 +66,14 @@ def backward_check(e_, e, u, parents, events):
     return True
 
 def merge(e_, e, events):
-    lower_limit = min(events[e_][0], events[e][0])
-    upper_limit = max(events[e_][1], events[e][1])
+    lower_limit = events[e][0]
+    upper_limit = events[e_][1]
+
+    if compareTo(events[e_][0], events[e][0]):
+        lower_limit = events[e_][0]
+    if compareTo(events[e_][1], events[e][1]):
+        upper_limit = events[e][1]
+
     #
     # print "Please Merge --", e_, " and ", e, "\n"
     # print "with upper limit as %.07f" % upper_limit
@@ -73,8 +89,8 @@ def make_final_csv(events_final, csv_details):
             for k, value in events_final.items():
                 u, v, sys_call, id = k
                 time_start, time_end = value
-                time_start = "{:.5f}".format(time_start)
-                time_end = "{:.5f}".format(time_end)
+                time_start = time_start
+                time_end = time_end
                 first_col = csv_details[id][0]
                 fourth_col = csv_details[id][1]
                 tag = csv_details[id][2]
