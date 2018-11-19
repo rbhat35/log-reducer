@@ -16,7 +16,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 class ParseError(Exception):
     pass
 
-
 def get_ts(au):
     event = au.get_timestamp()
     ts = "{0}.{1}:{2}".format(event.sec, event.milli, event.serial)
@@ -24,7 +23,6 @@ def get_ts(au):
 
 def get_rc(au):
     return au.find_field('exit')
-
 
 def get_subject(au):
     pid = au.find_field('pid')
@@ -64,13 +62,12 @@ class Parser(object):
             return
 
         #log.debug("Parsing syscall: {0}".format(self.syscall))
-        if self.syscall in ['open', 'execve']:
+        if self.syscall in ['open', 'openat', 'execve']:
             event = self.handle_open(au)
             #event = (ts, subject, self.syscall, resource, i_map[resource])
         elif self.syscall in ['read', 'readv']:
             event = self.handle_read(au)
         elif self.syscall in ['write', 'writev']:
-            #event = 'not used.'
             event = self.handle_write(au)
         elif self.syscall in ['close']:
             event = self.handle_close(au)
@@ -98,13 +95,20 @@ class Parser(object):
 
         key = "{0}:{1}".format(pid, fd)
 
+        record_text = au.get_record_text()
+
         # Get CWD.
         au.next_record()
         cwd = au.find_field('cwd')
         au.next_record()
         name = au.find_field('name')
+        if not name:
+            log.debug("Name returned None: {0}".format(record_text))
+            return
 
         if fd not in ['0', '1', '2']:
+            ino = au.find_field('inode')
+            au.get_record_text
             inode = hex(int(au.find_field('inode')))
         else:
             # stdin, stdout, ...
@@ -140,7 +144,10 @@ class Parser(object):
     def handle_open(self, au):
         """syscalls open"""
         ts = get_ts(au)
-        subject, resource = self.handle_new(au)
+        parsed_log = self.handle_new(au)
+        if not parsed_log:
+            return
+        subject, resource = parsed_log
         if not subject:
             return None
 

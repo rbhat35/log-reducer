@@ -7,9 +7,9 @@ sleep 150
 rdesktop -u steve 128.55.12.57
 sleep 60
 killall rdesktop
-firefox 128.55.12.167 &
+wget 128.55.12.167 &
 sleep 60
-firefox www.subway.com &
+wget www.subway.com &
 sleep 30
 rdesktop -u steve 128.55.12.57
 killall rdesktop
@@ -19,33 +19,33 @@ sleep 20
 netstat /ano > stats.txt
 sleep 39
 rm stats.txt
-firefox www.google.com &
+wget www.google.com &
 sleep 90
-firefox 128.55.12.167 &
+wget 128.55.12.167 &
 sleep 90
-firefox www.cbs.com &
+wget www.cbs.com &
 sleep 120
 w
 w > currentuser.txt
 sleep 90
 rm currentuser.txt
 sleep 35
-firefox www.pandora.com &
+wget www.pandora.com &
 sleep 180
 nmap -Pn 128.55.12.57 > state.txt
 sleep 90
 rm state.txt
 sleep 60
-firefox  www.youtube.com &
+wget  www.youtube.com &
 sleep 30
-killall firefox
-firefox www.geico &
+killall wget
+wget www.geico &
 sleep 30
-firefox www.hzds.sk &
-firefox www.ebay.ca &
+wget www.hzds.sk &
+wget www.ebay.ca &
 sleep 60
-firefox www.yellowbridge.com &
-killall firefox
+wget www.yellowbridge.com &
+killall wget
 find -iname "activity_gen"
 find ~ -empty
 sleep 212
@@ -70,22 +70,22 @@ sleep 45
 service ssh status
 service --status-all
 sleep 20
-firefox www.ny.gov
+wget www.ny.gov
 service --status-all > services.txt
 sleep 90
 netstat -an > stats.txt
 sleep 120
 rm stats.txt
-firefox www.jetblue.com & 
+wget www.jetblue.com & 
 free -t > free.txt
 sleep 90
 rdesktop -u steve 128.55.12.57
 sleep 200
 killall rdesktop
 sleep 60
-firefox 128.55.12.167 & 
+wget 128.55.12.167 & 
 sleep 120
-killall firefox
+killall wget
 rm free.txt
 sleep 90
 df -k
@@ -99,7 +99,7 @@ dig -x 200.200.200.1 > revlook.txt
 sleep 60
 rm revlook.txt
 sleep 10
-firefox www.homedepot.com &
+wget www.homedepot.com &
 uname -a > info.txt
 uname -r > info.txt
 sleep 100
