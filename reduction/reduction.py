@@ -1,18 +1,33 @@
 import csv
 import string
+import time
 from collections import defaultdict, OrderedDict
 
 from parser import parser, compareTo
 
+def timed(decorated_fn):
+    def wrapper_fn(*args, **kwargs):
+        s = time.time()
+        retval = decorated_fn(*args, **kwargs)
+        e = time.time()
 
+        print decorated_fn, "took", int(e-s), "seconds"
+
+        return retval
+
+    return wrapper_fn
+
+# @timed
 def generate_children(node, children):
     for i in children[node]:
         yield i
 
+# @timed
 def generate_parents(node, parents):
     for i in parents[node]:
         yield i
 
+# @timed
 def check_overlap(start_1, end_1, start_2, end_2):
 
     if compareTo(start_1, start_2) and compareTo(end_1, start_2):
@@ -22,7 +37,7 @@ def check_overlap(start_1, end_1, start_2, end_2):
 
     return False
 
-
+# @timed
 def forward_check(e_, e, v, children, events):
     # print "in forward check"
     # print events
@@ -45,6 +60,7 @@ def forward_check(e_, e, v, children, events):
             return False
     return True
 
+# @timed
 def backward_check(e_, e, u, parents, events):
     # print u, "nnn",parents, "nnn",events
 
@@ -65,6 +81,7 @@ def backward_check(e_, e, u, parents, events):
             return False
     return True
 
+# @timed
 def merge(e_, e, events):
     lower_limit = events[e][0]
     upper_limit = events[e_][1]
@@ -81,6 +98,7 @@ def merge(e_, e, events):
 
     return lower_limit, upper_limit
 
+# @timed
 def make_final_csv(events_final, csv_details):
     with open('forward-reduced.csv', mode='w') as f_forward:
         forward_writer = csv.writer(f_forward, delimiter=',')
@@ -100,7 +118,8 @@ def make_final_csv(events_final, csv_details):
                 else:
                     l = [first_col, u, sys_call, fourth_col, v, time_start, time_end]
                     backward_writer.writerow(l)
-
+@timed
+@profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
     parents, children, events, csv_details = parser()
