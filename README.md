@@ -120,3 +120,12 @@ program `ls` using the command line parameter `-h`, the command below would be u
 ```shell
 ./examples/trace.sh "/bin/ls -h" ls.audit
 ```
+
+Running the reduction code
+===
+The paths for the forwards and backwards csv needs to be updated. 
+
+```shell
+cd reduction
+python -m memory_profiler reduction.py
+```
