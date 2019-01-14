@@ -12,7 +12,7 @@ def timed(decorated_fn):
         retval = decorated_fn(*args, **kwargs)
         e = time.time()
 
-        print decorated_fn, "took", int(e-s), "seconds"
+        print decorated_fn, "took", (e-s), "seconds"
 
         return retval
 
@@ -26,17 +26,17 @@ def index(a, x):
     else:
         return -1
 
-# @timed
+@timed
 def generate_children(node, children):
     for i in children[node]:
         yield i
 
-# @timed
+@timed
 def generate_parents(node, parents):
     for i in parents[node]:
         yield i
 
-# @timed
+@timed
 def check_overlap(start_1, end_1, start_2, end_2):
 
     if compareTo(start_1, start_2) and compareTo(end_1, start_2):
@@ -46,7 +46,7 @@ def check_overlap(start_1, end_1, start_2, end_2):
 
     return False
 
-# @timed
+@timed
 def forward_check(e_, e, v, children, events):
     # print "in forward check"
     # print events
@@ -69,7 +69,7 @@ def forward_check(e_, e, v, children, events):
             return False
     return True
 
-# @timed
+@timed
 def backward_check(e_, e, u, parents, events):
     # print u, "nnn",parents, "nnn",events
 
@@ -90,7 +90,7 @@ def backward_check(e_, e, u, parents, events):
             return False
     return True
 
-# @timed
+@timed
 def merge(e_, e, events):
     lower_limit = events[e][0]
     upper_limit = events[e_][1]
@@ -107,7 +107,7 @@ def merge(e_, e, events):
 
     return lower_limit, upper_limit
 
-# @timed
+@timed
 def make_final_csv(events_final, csv_details):
     with open('forward-reduced.csv', mode='w') as f_forward:
         forward_writer = csv.writer(f_forward, delimiter=',')
@@ -156,18 +156,23 @@ def reduction():
                 events[candidate_event] = (lower_limit, upper_limit,) #the lower limit and upper
                 #limit gets updated for the same key as of the popped event
                 events_final[candidate_event] = (lower_limit, upper_limit,)
-
+		s = time.time()
                 parents_index = index(parents_id[v], id_)
                 if parents_index != -1:
                     del parents[v][parents_index]
                     del parents_id[v][parents_index]
 
-
-
+		e = time.time()
+		print "<function 1_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
+		
+		s = time.time()
                 children_index = index(children_id[u], id_)
                 if children_index != -1:
                     del children[u][children_index]
                     del children_id[u][children_index]
+		
+		e = time.time()
+                print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
 
 
                 # for i, parent in enumerate(parents[v]):
