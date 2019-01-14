@@ -3,8 +3,8 @@ import string
 from collections import defaultdict, OrderedDict
 
 
-FORWARD_CSV_PATH = "/Users/raghav/log-compression-project/parser/forward.csv"
-BACKWARD_CSV_PATH = "/Users/raghav/log-compression-project/parser/backwards.csv"
+FORWARD_CSV_PATH = "../parser/backwards.csv"
+BACKWARD_CSV_PATH = "../parser/forward.csv"
 
 
 def compareTo(time1, time2):
@@ -24,6 +24,8 @@ def read_csv(PATH):
 def parser():
     parents = defaultdict(list)
     children = defaultdict(list)
+    parents_id = defaultdict(list)
+    children_id = defaultdict(list)
     events = defaultdict(tuple) #make an ordereddict to maintain the order to avoid sorting.
     meta = defaultdict(tuple)
     time = dict()
@@ -69,11 +71,11 @@ def parser():
             b_row = next(b, "DONE")
 
         parents[v].append((u, sys_call, id))
+        parents_id[v].append(id)
         children[u].append((v, sys_call, id))
+        children_id[u].append(id)
         events[(u, v, sys_call, id)] = (time_start, time_start)
     	meta[id] = metaData
         id += 1
 
-
-
-    return parents, children, events, meta
+    return parents, children, events, meta, parents_id, children_id

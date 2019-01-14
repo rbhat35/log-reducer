@@ -1,6 +1,7 @@
 import csv
 import string
 import time
+import bisect
 from collections import defaultdict, OrderedDict
 
 from parser import parser, compareTo
@@ -16,6 +17,14 @@ def timed(decorated_fn):
         return retval
 
     return wrapper_fn
+
+def index(a, x):
+    'Locate the leftmost value exactly equal to x'
+    i = bisect.bisect_left(a, x)
+    if i != len(a) and a[i] == x:
+        return i
+    else:
+        return -1
 
 # @timed
 def generate_children(node, children):
@@ -122,7 +131,11 @@ def make_final_csv(events_final, csv_details):
 @profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
-    parents, children, events, csv_details = parser()
+
+    parents, children, events, csv_details, parents_id, children_id = parser()
+    parent_ids = []
+    # print parents
+    # print children
     # print events
     stacks = defaultdict(list)
     # parents[v].append((u, sys_call, id))
@@ -143,12 +156,27 @@ def reduction():
                 events[candidate_event] = (lower_limit, upper_limit,) #the lower limit and upper
                 #limit gets updated for the same key as of the popped event
                 events_final[candidate_event] = (lower_limit, upper_limit,)
-                for i, parent in enumerate(parents[v]):
-                    if parent[2] == id_:
-                        del parents[v][i]
-                for i, child in enumerate(children[u]):
-                    if child[2] == id_:
-                        del children[u][i]
+
+                parents_index = index(parents_id[v], id_)
+                if parents_index != -1:
+                    del parents[v][parents_index]
+                    del parents_id[v][parents_index]
+
+
+
+                children_index = index(children_id[u], id_)
+                if children_index != -1:
+                    del children[u][children_index]
+                    del children_id[u][children_index]
+
+
+                # for i, parent in enumerate(parents[v]):
+                #     if parent[2] == id_:
+                #         del parents[v][i]
+                # for i, child in enumerate(children[u]):
+                #     if child[2] == id_:
+                #         del children[u][i]
+
                 del events_final[event]
                 stacks[(u, v, sys_call)].append(candidate_event)
             else:
