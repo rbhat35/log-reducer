@@ -2,6 +2,7 @@ import csv
 import string
 import time
 import bisect
+import copy
 from collections import defaultdict, OrderedDict
 
 from parser import parser, compareTo
@@ -39,12 +40,19 @@ def generate_parents(node, parents):
 @timed
 def check_overlap(start_1, end_1, start_2, end_2):
 
-    if compareTo(start_1, start_2) and compareTo(end_1, start_2):
-        return True
-    elif compareTo(end_2, start_1):
-        return True
+    if start_1 > start_2:
+	temp = start_2
+	start_2 = start_1
+	start_1 = temp
+	
+	temp = end_2
+	end_2 = end_1
+	end_1 = temp
 
-    return False
+    if start_2 <= end_1 or end_2 <= end_1:
+	return True
+
+    return False 
 
 @timed
 def forward_check(e_, e, v, children, events):
@@ -58,14 +66,14 @@ def forward_check(e_, e, v, children, events):
 
     if compareTo(events[e_][0], events[e][0]):
         lower_limit = events[e_][0]
-    if compareTo(events[e_][0], events[e][0]):
+   # if compareTo(events[e_][0], events[e][0]):
         upper_limit = events[e][0]
 
     for child in generate_children(v, children):
         v_child = child[0]
         sys_call = child[1]
         id = child[2]
-        if check_overlap(lower_limit, upper_limit, events[(v, v_child, sys_call, id)][0], events[(v, v_child, sys_call, id)][1]) is False:
+        if check_overlap(lower_limit, upper_limit, events[(v, v_child, sys_call, id)][0], events[(v, v_child, sys_call, id)][1]):
             return False
     return True
 
@@ -78,14 +86,14 @@ def backward_check(e_, e, u, parents, events):
 
     if compareTo(events[e_][1], events[e][1]):
         lower_limit = events[e_][1]
-    if compareTo(events[e_][1], events[e][1]):
+   # if compareTo(events[e_][1], events[e][1]):
         upper_limit = events[e][1]
 
     for parent in generate_parents(u, parents):
         u_parent = parent[0]
         sys_call = parent[1]
         id = parent[2]
-        if check_overlap(lower_limit, upper_limit, events[(u_parent, u, sys_call, id)][0], events[(u_parent, u, sys_call, id)][1]) is False:
+        if check_overlap(lower_limit, upper_limit, events[(u_parent, u, sys_call, id)][0], events[(u_parent, u, sys_call, id)][1]):
             # print "False Returned-Backward"
             return False
     return True
@@ -97,6 +105,8 @@ def merge(e_, e, events):
 
     if compareTo(events[e_][0], events[e][0]):
         lower_limit = events[e_][0]
+    else:
+	print "Error in the order of events!"
     if compareTo(events[e_][1], events[e][1]):
         upper_limit = events[e][1]
 
@@ -116,19 +126,17 @@ def make_final_csv(events_final, csv_details):
             for k, value in events_final.items():
                 u, v, sys_call, id = k
                 time_start, time_end = value
-                time_start = time_start
-                time_end = time_end
                 first_col = csv_details[id][0]
                 fourth_col = csv_details[id][1]
                 tag = csv_details[id][2]
                 if tag == 'FORWARD':
                     l = [first_col, v, sys_call, fourth_col, u, time_start, time_end]
                     forward_writer.writerow(l)
-                else:
+                elif tag == 'BACKWARD':
                     l = [first_col, u, sys_call, fourth_col, v, time_start, time_end]
                     backward_writer.writerow(l)
 @timed
-@profile
+#@profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
 
@@ -142,7 +150,7 @@ def reduction():
     # children[u].append((v, sys_call, id))
     # events[(u, v, sys_call, id)] = (time_start, time_start)
     events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
-    events_final = events
+    events_final = copy.deepcopy(events)
     # print events.values()
     for event, time_interval in events.items():
         u, v, sys_call, id_ = event
