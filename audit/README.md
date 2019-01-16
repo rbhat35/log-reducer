@@ -1,6 +1,6 @@
 Running Whole-System Monitoring
 
-Start Linux Audit with 
+Starting Linux Audit 
 ===
 
 To turn on auditing for the entire system, run the following command:
@@ -10,7 +10,7 @@ To turn on auditing for the entire system, run the following command:
 The output logs will be stored at `/var/log/audit/audit.log`.
 
 
-Shutdown  Whole-System Monitoring
+Shutdown Whole-System Monitoring
 ===
 
 You can delete all the rules to turn off the monitoring.
@@ -32,7 +32,7 @@ Troubleshooting
 
 `sudo systemctl restart auditd`
 
-Verify Monitoring is turned on
+Verify Monitoring Status
 ===
 
 #### Check for the correct rules
