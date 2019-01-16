@@ -14,4 +14,4 @@ run_autrace() {
 sudo auditctl -D
 # Demonstrates the affect of loops on provenance graph.
 run_autrace $1 $2
-
+sudo auditctl -D
