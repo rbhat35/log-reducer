@@ -25,7 +25,7 @@ Starting Neo4j
 
 Start the Neo4j service
 
-```shell 
+```shell
 sudo service neo4j start
 ```
 
@@ -33,13 +33,13 @@ Example Graphs
 ===
 
 There are two example graphs that can be used to verify the setup is correct
-in the examples directory. Run the commands below to create the raw audit 
+in the examples directory. Run the commands below to create the raw audit
 logs. If `run_tests.sh` is ran succesfully, two files will be created:
-`readloop_1024.audit` and `readloop_256.audit`. 
+`readloop_1024.audit` and `readloop_256.audit`.
 
 ```shell
 cd examples
-make 
+make
 ./run_tests.sh
 ```
 
@@ -48,7 +48,7 @@ into csv files that can be inserted into Neo4j. Neo4j is a graph database.
 To create the csv files run the commands below, which will create two csv
 files `forward.csv` and `backwards.csv`.
 
-```shell 
+```shell
 cd parser
 python parser.py ../examples/readloop_256.audit
 ```
@@ -91,7 +91,7 @@ INFO:modules.filemap:inode: 0xc206d4
 ```
 
 
-The final step is to insert the data into Neo4j. To do this run the following 
+The final step is to insert the data into Neo4j. To do this run the following
 command:
 
 ```shell
@@ -100,7 +100,7 @@ $ sudo ./neo4j-load-csv.sh .
 
 The output should be similar to the following:
 
-```shell 
+```shell
 0 rows available after 675 ms, consumed after another 0 ms
 Created 2 relationships, Set 4 properties
 0 rows available after 1383 ms, consumed after another 0 ms
@@ -114,7 +114,7 @@ in a browser. A tutorial on how to visualize the graph can be found here (https:
 Tracing a new Program
 ===
 
-The trace a program you can run the command `./example.trace.sh "<path to file> <arguments>" output file. For example, to trace the 
+The trace a program you can run the command `./example.trace.sh "<path to file> <arguments>" output file. For example, to trace the
 program `ls` using the command line parameter `-h`, the command below would be used.. The output would be saved to ls.audit.
 
 ```shell
@@ -123,9 +123,15 @@ program `ls` using the command line parameter `-h`, the command below would be u
 
 Running the reduction code
 ===
-The paths for the forwards and backwards csv needs to be updated. 
+The paths for the forwards and backwards csv needs to be updated.
 
 ```shell
 cd reduction
 python -m memory_profiler reduction.py
 ```
+
+Performance Improvement
+===
+Early versions of our code were taking hours to reduce logs worth just minutes. We were able to drastically improve our runtime by exploiting the fact that logs are sorted chronologically, and thus, when searching for a particular parent or children of a node, we can use binary search.
+
+For each new entry in the log, we perform forward_check and backward_check, the methods that ensure that two candidate events can be safely merged. If both checks pass (are true), we merge the two edges. However, we must also delete all parents' (predecessors) knowledge of the node. parents\[v\] stores a list of all the parents, and we use binary search to find the index where we must delete the reference to the node we just merged.
