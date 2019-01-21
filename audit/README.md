@@ -1,11 +1,14 @@
 Running Whole-System Monitoring
 
-Starting Linux Audit 
+Starting Linux Audit
 ===
 
 To turn on auditing for the entire system, run the following command:
 
+`sudo rm /var/log/audit/audit.log`
+`sudo systemctl stop auditd`
 `sudo start_audit.sh`
+`sudo systemctl start auditd`
 
 The output logs will be stored at `/var/log/audit/audit.log`.
 
@@ -51,14 +54,14 @@ jallen309@theia:~/log-compression/audit$ auditctl -l
 
 #### Verify the size of the audit logs are growing
 
-`ll  /var/log/audit/audit.log` run this command multiple 
+`ll  /var/log/audit/audit.log` run this command multiple
 times to see if the size is growing.
 
 
 #### Verify correct system calls are being logs
 
 ```
- sudo tail /var/log/audit/audit.log 
+ sudo tail /var/log/audit/audit.log
 type=CWD msg=audit(1547654875.661:33315): cwd="/home/jallen309/log-compression/audit"
 type=PATH msg=audit(1547654875.661:33315): item=0 name="/etc/passwd" inode=33295888 dev=fd:00 mode=0100644 ouid=0 ogid=0 rdev=00:00 nametype=NORMAL cap_fp=0000000000000000 cap_fi=0000000000000000 cap_fe=0 cap_fver=0
 type=PROCTITLE msg=audit(1547654875.661:33315): proctitle="-bash"
