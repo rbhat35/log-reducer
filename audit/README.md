@@ -5,10 +5,10 @@ Starting Linux Audit
 
 To turn on auditing for the entire system, run the following command:
 
-`sudo rm /var/log/audit/audit.log`
+`sudo ./start_audit.sh`
+
+To stop the service:
 `sudo systemctl stop auditd`
-`sudo start_audit.sh`
-`sudo systemctl start auditd`
 
 The output logs will be stored at `/var/log/audit/audit.log`.
 
