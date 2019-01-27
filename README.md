@@ -132,6 +132,10 @@ python -m memory_profiler reduction.py
 
 Performance Improvement
 ===
-Early versions of our code were taking hours to reduce logs worth just minutes. We were able to drastically improve our runtime by exploiting the fact that logs are sorted chronologically, and thus, when searching for a particular parent or children of a node, we can use binary search.
+Early versions of our code were taking hours to reduce logs worth just minutes. We were able to drastically improve our runtime by exploiting the fact that logs are sorted chronologically.
 
-For each new entry in the log, we perform forward_check and backward_check, the methods that ensure that two candidate events can be safely merged. If both checks pass (are true), we merge the two edges. However, we must also delete all parents' (predecessors) knowledge of the node. parents\[v\] stores a list of all the parents, and we use binary search to find the index where we must delete the reference to the node we just merged.
+In order to check forward and backward dependencies we need to access the parents and children for different nodes (If a directed edge goes from u to v, u is the parent and v is the child).  The information of these parents and children are saved in the form of two adjacency lists. We populate these lists initially at the beginning of the algorithm. For every parent, its children (and their corresponded edges) and for every child, its parents (and their corresponded edges) are saved in the chronological order in these lists.
+
+According to the algorithm, after checking the dependencies, if there is a reduction i.e. two edges need to be replaced by 1, we eliminate the edge from the lists mentioned above. Since each edge has a unique id, we know the id that needs to be deleted (the edge that is redundant according to the reduction algorithm). Here, we use binary search to search the redundant edge id in the lists mentioned above, as opposed to using a linear search being used initially.
+
+This decreased the complexity from O(n) to O(logn) and drastically reduced the reduction time for large logs (for eg. 36 hour logs). 
