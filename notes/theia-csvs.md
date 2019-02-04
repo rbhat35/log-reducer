@@ -1,14 +1,14 @@
 backward-edge-0.csv
 ===
 
-Column0 -- RecordType
-Column1 -- HostUUID-EventUUID
-Column2 -- EventType 
-Column3 -- HostUUID-ProcessUUID 
-Column4 -- HostUUID-ResourceUUID 
-Column5 -- HostUUID-ResourceUUID2 
-Column6 -- timestamp 
-Column8 -- size 
+* Column0 -- RecordType
+* Column1 -- HostUUID-EventUUID
+* Column2 -- EventType 
+* Column3 -- HostUUID-ProcessUUID 
+* Column4 -- HostUUID-ResourceUUID 
+* Column5 -- HostUUID-ResourceUUID2 
+* Column6 -- timestamp 
+* Column8 -- size 
 
 Notes:
 
@@ -41,28 +41,28 @@ subject-nodes-\*.csv
 
 Represent processes that were executed during the logging.
 
-Column0 -- RecordType
-Column1 -- HostUUID-SubjectUUID
-Column2 -- SubjectType 
-Column3 -- PID
-Column4 -- HostUUID-ParentSubjectUUID 
-Column5 -- HostUUID-PrincipalUUID
-Column6 -- Timestamp
-Column7 -- commandLine
-Column8 -- pathname
+* Column0 -- RecordType
+* Column1 -- HostUUID-SubjectUUID
+* Column2 -- SubjectType 
+* Column3 -- PID
+* Column4 -- HostUUID-ParentSubjectUUID 
+* Column5 -- HostUUID-PrincipalUUID
+* Column6 -- Timestamp
+* Column7 -- commandLine
+* Column8 -- pathname
 
 netflow-nodes-\*.csv
 ===
 
 Represents a internet (INET socket) connection between the system and an IP
 
-Column0 -- RecordType
-Column1 -- HostUUID-NetflowUUID (unique id)
-Column2 -- Local IP address
-Column3 -- Local port
-Column4 -- RemoteAddress
-Column5 -- RemotePort
-Column6 -- name
+* Column0 -- RecordType
+* Column1 -- HostUUID-NetflowUUID (unique id)
+* Column2 -- Local IP address
+* Column3 -- Local port
+* Column4 -- RemoteAddress
+* Column5 -- RemotePort
+* Column6 -- name
 
 file-node-\*.csv
 ===
@@ -70,11 +70,11 @@ file-node-\*.csv
 Represents a file node.
 
 
-Column0 -- RecordType
-Column1 -- HostUUID-FileUUID
-Column2 -- HostUUID-PrincipalUUID
-Column3 -- filename
-Column4 -- name
+* Column0 -- RecordType
+* Column1 -- HostUUID-FileUUID
+* Column2 -- HostUUID-PrincipalUUID
+* Column3 -- filename
+* Column4 -- name
 
 
 ipc-node-\*.csv
@@ -82,10 +82,10 @@ ipc-node-\*.csv
 
 Represents a IPC channel (ignore for now).
 
-Column0 -- RecordType
-Column1 -- HostUUID-IPCUUID (unique id)
-Column2 -- Local IP address
-Column3 -- Local port
-Column4 -- RemoteAddress
-Column5 -- RemotePort
-Column6 -- name
+* Column0 -- RecordType
+* Column1 -- HostUUID-IPCUUID (unique id)
+* Column2 -- Local IP address
+* Column3 -- Local port
+* Column4 -- RemoteAddress
+* Column5 -- RemotePort
+* Column6 -- name
