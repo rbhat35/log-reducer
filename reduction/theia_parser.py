@@ -3,6 +3,7 @@ import string
 from collections import defaultdict, OrderedDict
 import glob
 import os
+from natsort import natsorted
 
 
 FORWARD_CSV_PATH = "../data/new-csvs/"
@@ -17,8 +18,10 @@ def compareTo(time1, time2):
     return ((start_1_second < start_2_second) or (start_1_second == start_2_second and start_1_milli < start_2_milli) or (start_1_second == start_2_second and start_1_milli == start_2_milli and start_1_serial <= start_2_serial))
 
 def read_csv(PATH, pattern):
-    for filename in glob.glob(os.path.join(PATH, pattern)):
+    all_file_names_list = glob.glob(os.path.join(PATH, pattern))
+    all_file_names_list = natsorted(all_file_names_list)
 
+    for filename in all_file_names_list:
         file = open(filename, 'rb')
         f_reader = csv.reader(file, delimiter=',')
 
@@ -41,6 +44,8 @@ def parser():
     f_row = next(f, "DONE")
     b_row = next(b, "DONE")
 
+    id = 0
+
     while f_row is not "DONE" or b_row is not "DONE":
         if f_row is not "DONE":
             # Note that the timeStamp is f_row[6]
@@ -56,28 +61,26 @@ def parser():
 
 
         if b_row is "DONE" or  (f_row is not "DONE" and compareTo((f_start_second, f_start_milli, f_start_serial), (b_start_second, b_start_milli, b_start_serial))):
-            id = f_row[1]
             sys_call = f_row[2]
             v = f_row[3] # in forward, 'v' is the process, right?
             u = f_row[4] # in forward, 'u' is the file being accessed (resource), right?
             size = f_row[7]
             time_start = (f_start_second, f_start_milli, f_start_serial)
 
-            # metaData contains (RecordType, ResourceUUID2, timestamp, EventType, "FORWARD")
+            # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "FORWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (f_row[0], f_row[5], f_row[6], f_row[8], "FORWARD")
+            metaData = (f_row[0], f_row[1], f_row[5], f_row[6], f_row[8], "FORWARD")
             f_row = next(f, "DONE")
         else:
-            id = b_row[1]
             sys_call = b_row[2]
             u = b_row[3] # in backward, 'u' is the process
             v = b_row[4] # in backward, 'v' is the file being accessed (resource)
             size = b_row[7]
             time_start = (b_start_second, b_start_milli, b_start_serial)
 
-            # metaData contains (RecordType, ResourceUUID2, timestamp, EventType, "BACKWARD")
+            # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "BACKWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (b_row[0], b_row[5], b_row[6], b_row[8], "BACKWARD")
+            metaData = (b_row[0], b_row[1], b_row[5], b_row[6], b_row[8], "BACKWARD")
             b_row = next(b, "DONE")
 
         parents[v].append((u, sys_call, id))
@@ -88,6 +91,8 @@ def parser():
         sizes[id] = size
     	meta[id] = metaData
 
+        id += 1
+
     return parents, children, events, meta, parents_id, children_id, sizes
 
 
@@ -96,26 +101,28 @@ def debug():
     b = read_csv(BACKWARD_CSV_PATH, 'backward-edge-*.csv')
 
     for i in range(1):
-        f_row = next(b, "DONE")
-        timeStamp = f_row[6]
-        id = f_row[1]
-        event_type = f_row[2]
-        process = f_row[3]
-        resource = f_row[4]
-        size = f_row[7]
-        meta = (f_row[0], f_row[5], f_row[6], f_row[8])
+        b_row = next(b, "DONE")
+        id = b_row[1]
+        sys_call = b_row[2]
+        u = b_row[3] # in backward, 'u' is the process
+        v = b_row[4] # in backward, 'v' is the file being accessed (resource)
+        size = b_row[7]
+        # time_start = (b_start_second, b_start_milli, b_start_serial)
 
+        # f_start_serial = float(timeStamp[13:])
+        # f_start_milli = float(timeStamp[10: 13])
+        # f_start_second = float(timeStamp[:10])
 
-        f_start_serial = float(timeStamp[13:])
-        f_start_milli = float(timeStamp[10: 13])
-        f_start_second = float(timeStamp[:10])
-
-        print f_start_serial
-        print f_start_milli
-        print f_start_second
+        print id
+        print sys_call
+        print u
+        print v
+        print size
+        # print time_start
 
 
 if __name__ == "__main__":
+    # debug()
     parents, children, events, meta, parents_id, children_id, sizes = parser()
 
     print len(parents)
