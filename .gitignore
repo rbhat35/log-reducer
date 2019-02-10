@@ -1,4 +1,4 @@
 rawlogs/*
 *.o
 *.pyc
-
+/data/new-csvs/*
