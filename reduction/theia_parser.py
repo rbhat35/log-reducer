@@ -65,22 +65,26 @@ def parser():
             v = f_row[3] # in forward, 'v' is the process, right?
             u = f_row[4] # in forward, 'u' is the file being accessed (resource), right?
             size = f_row[7]
+            if size == "":
+                size = 0
             time_start = (f_start_second, f_start_milli, f_start_serial)
 
             # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "FORWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (f_row[0], f_row[1], f_row[5], f_row[6], f_row[8], "FORWARD")
+            metaData = (f_row[0], f_row[1], f_row[5], f_row[6], f_row[7], f_row[8], "FORWARD")
             f_row = next(f, "DONE")
         else:
             sys_call = b_row[2]
             u = b_row[3] # in backward, 'u' is the process
             v = b_row[4] # in backward, 'v' is the file being accessed (resource)
             size = b_row[7]
+            if size == "":
+                size = 0
             time_start = (b_start_second, b_start_milli, b_start_serial)
 
             # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "BACKWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (b_row[0], b_row[1], b_row[5], b_row[6], b_row[8], "BACKWARD")
+            metaData = (b_row[0], b_row[1], b_row[5], b_row[6], f_row[7], b_row[8], "BACKWARD")
             b_row = next(b, "DONE")
 
         parents[v].append((u, sys_call, id))

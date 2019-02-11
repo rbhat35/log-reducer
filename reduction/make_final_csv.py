@@ -20,13 +20,13 @@ def make_final_csv(events_final, csv_details):
             backward_writer = csv.writer(f_backward, delimiter=',')
             for k, value in events_final.items():
                 u, v, sys_call, id = k
+                zero_col, one_col, five_col, six_col, size, eight_col, tag = csv_details[id]
                 time_start, time_end = value
-                first_col = csv_details[id][0]
-                fourth_col = csv_details[id][1]
-                tag = csv_details[id][2]
+                if size = 0:
+                    size = ""
                 if tag == 'FORWARD':
-                    l = [first_col, v, sys_call, fourth_col, u, time_start, time_end]
+                    l = [zero_col, one_col, sys_call, v, u, five_col, six_col, size, eight_col, time_start, time_end]
                     forward_writer.writerow(l)
                 elif tag == 'BACKWARD':
-                    l = [first_col, u, sys_call, fourth_col, v, time_start, time_end]
+                    l = [zero_col, one_col, sys_call, u, v, five_col, six_col, size, eight_col, time_start, time_end]
                     backward_writer.writerow(l)
