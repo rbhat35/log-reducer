@@ -71,7 +71,7 @@ def parser():
 
             # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "FORWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (f_row[0], f_row[1], f_row[5], f_row[6], f_row[7], f_row[8], "FORWARD")
+            metaData = (f_row[0], f_row[1], f_row[5], f_row[6], f_row[8], "FORWARD")
             f_row = next(f, "DONE")
         else:
             sys_call = b_row[2]
@@ -84,7 +84,7 @@ def parser():
 
             # metaData contains (RecordType, EventID, ResourceUUID2, timestamp, EventType, "BACKWARD")
             # I'm unsure about why there are two EventType entries
-            metaData = (b_row[0], b_row[1], b_row[5], b_row[6], f_row[7], b_row[8], "BACKWARD")
+            metaData = (b_row[0], b_row[1], b_row[5], b_row[6], b_row[8], "BACKWARD")
             b_row = next(b, "DONE")
 
         parents[v].append((u, sys_call, id))
@@ -92,7 +92,7 @@ def parser():
         children[u].append((v, sys_call, id))
         children_id[u].append(id)
         events[(u, v, sys_call, id)] = (time_start, time_start)
-        sizes[id] = size
+        sizes[id] = float(size)
     	meta[id] = metaData
 
         id += 1

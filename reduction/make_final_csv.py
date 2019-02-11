@@ -13,15 +13,16 @@ def timed(decorated_fn):
     return wrapper_fn
 
 @timed
-def make_final_csv(events_final, csv_details):
+def make_final_csv(events_final, csv_details, sizes):
     with open('forward-reduced.csv', mode='w') as f_forward:
         forward_writer = csv.writer(f_forward, delimiter=',')
         with open('backward-reduced.csv', mode='w') as f_backward:
             backward_writer = csv.writer(f_backward, delimiter=',')
             for k, value in events_final.items():
                 u, v, sys_call, id = k
-                zero_col, one_col, five_col, six_col, size, eight_col, tag = csv_details[id]
+                zero_col, one_col, five_col, six_col, eight_col, tag = csv_details[id]
                 time_start, time_end = value
+                size = sizes[id]
                 if size = 0:
                     size = ""
                 if tag == 'FORWARD':

@@ -4,7 +4,7 @@ import bisect
 import copy
 from collections import defaultdict, OrderedDict
 
-from parser import theia_parser, compareTo
+from theia_parser import parser, compareTo
 from make_final_csv import make_final_csv
 from forward_backward_check import forward_check, backward_check
 
@@ -97,7 +97,7 @@ def reduction():
                 else:
                     stacks[(u, v, sys_call)].append(event)
 
-    make_final_csv(events_final, csv_details)
+    make_final_csv(events_final, csv_details, sizes)
     print "The total size reduced is ---> ", total_size_reduced
 
 
