@@ -6,8 +6,8 @@ import os
 from natsort import natsorted
 
 
-FORWARD_CSV_PATH = "../data/new-csvs/"
-BACKWARD_CSV_PATH = "../data/new-csvs/"
+FORWARD_CSV_PATH = "/data/new-csvs/"
+BACKWARD_CSV_PATH = "/data/new-csvs/"
 
 
 def compareTo(time1, time2):
