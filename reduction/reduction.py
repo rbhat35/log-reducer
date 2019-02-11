@@ -45,10 +45,9 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 
 
 @timed
-#@profile
+@profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
-    total_size_reduced = 0.
     parents, children, events, csv_details, parents_id, children_id, sizes = parser()
 
     parent_ids = []
@@ -74,7 +73,6 @@ def reduction():
                     id_candidate_event = candidate_event[3]
                     size_reduced = sizes[id_] + sizes[id_candidate_event]
                     sizes[id_candidate_event] = size_reduced
-                    total_size_reduced += size_reduced
                     s = time.time()
                     parents_index = index(parents_id[v], id_)
                     if parents_index != -1:
@@ -98,7 +96,6 @@ def reduction():
                     stacks[(u, v, sys_call)].append(event)
 
     make_final_csv(events_final, csv_details, sizes)
-    print "The total size reduced is ---> ", total_size_reduced
 
 
 def main():
