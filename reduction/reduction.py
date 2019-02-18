@@ -37,7 +37,7 @@ def find_lower_upper_limit_of_interval(e_, e, events):
     if compareTo(events[e_][0], events[e][0]):
         lower_limit = events[e_][0]
     else:
-	print "Error in the order of events!"
+        print "Error in the order of events!"
     if compareTo(events[e_][1], events[e][1]):
         upper_limit = events[e][1]
 
@@ -60,7 +60,6 @@ def reduction():
         u, v, sys_call, id_ = event
         if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
             sys_call == "EVENT_READ" or sys_call == "EVENT_RECVFROM" or sys_call == "EVENT_RECVMSG":
-	    print sys_call
             if len(stacks[(u, v, sys_call)]) == 0:
                 stacks[(u, v, sys_call)].append(event)
             else:
@@ -95,7 +94,7 @@ def reduction():
                     stacks[(u, v, sys_call)].append(candidate_event)
                 else:
                     stacks[(u, v, sys_call)].append(event)
-
+                    
     make_final_csv(events_final, csv_details, sizes)
 
 
