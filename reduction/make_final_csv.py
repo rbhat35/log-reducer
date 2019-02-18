@@ -23,7 +23,7 @@ def make_final_csv(events_final, csv_details, sizes):
                 zero_col, one_col, five_col, six_col, eight_col, tag = csv_details[id]
                 time_start, time_end = value
                 size = sizes[id]
-                if size = 0:
+                if size == 0:
                     size = ""
                 if tag == 'FORWARD':
                     l = [zero_col, one_col, sys_call, v, u, five_col, six_col, size, eight_col, time_start, time_end]

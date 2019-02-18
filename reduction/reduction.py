@@ -45,11 +45,11 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 
 
 @timed
-@profile
+#@profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
     parents, children, events, csv_details, parents_id, children_id, sizes = parser()
-
+    print "done with parser"
     parent_ids = []
     stacks = defaultdict(list)
 
@@ -58,8 +58,9 @@ def reduction():
 
     for event, time_interval in events.items():
         u, v, sys_call, id_ = event
-        if syscall == "EVENT_WRITE" or syscall == "EVENT_SENDTO" or syscall == "EVENT_SENDMSG" or \
-            syscall == "EVENT_READ" or syscall == "EVENT_RECVFROM" or syscall == "EVENT_RECVMSG":
+        if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
+            sys_call == "EVENT_READ" or sys_call == "EVENT_RECVFROM" or sys_call == "EVENT_RECVMSG":
+	    print sys_call
             if len(stacks[(u, v, sys_call)]) == 0:
                 stacks[(u, v, sys_call)].append(event)
             else:
