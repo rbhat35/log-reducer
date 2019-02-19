@@ -48,6 +48,7 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 #@profile
 def reduction():
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
+    reduction_count = 0
     parents, children, events, csv_details, parents_id, children_id, sizes = parser()
     print "done with parser"
     parent_ids = []
@@ -91,10 +92,11 @@ def reduction():
                     e = time.time()
                     print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
                     del events_final[event]
+                    reduction_count += 1
                     stacks[(u, v, sys_call)].append(candidate_event)
                 else:
                     stacks[(u, v, sys_call)].append(event)
-                    
+    print "the Reduction count is --> ", reduction_count            
     make_final_csv(events_final, csv_details, sizes)
 
 

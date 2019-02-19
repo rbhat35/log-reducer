@@ -29,7 +29,7 @@ def make_final_csv(events_final, csv_details, sizes):
     forward_writer = csv.writer(forward_file, delimiter=',')
     backward_writer = csv.writer(backward_file, delimiter=',')
 
-    num_entries_per_file = 100000
+    num_entries_per_file = 10000
 
     for k, value in events_final.items():
         u, v, sys_call, id = k
