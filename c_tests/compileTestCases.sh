@@ -9,5 +9,5 @@ gcc -o testCase6.o testCase6.c
 gcc -o testCase7.o testCase7.c
 gcc -o testCase8.o testCase8.c
 gcc -o testCase9.o testCase9.c
-gcc -o testCase10.o testCase10.c
-gcc -o testCase11.o testCase11.c
+gcc -o testCase10.o testCase10.c -lm
+gcc -o testCase11.o testCase11.c -lm
