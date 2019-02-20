@@ -9,5 +9,5 @@
 ./testCase7 "test.txt"
 ./testCase8 "test.txt"
 ./testCase9 "test.txt"
-./testCase10
-./testCase11
+#./testCase10
+#./testCase11
