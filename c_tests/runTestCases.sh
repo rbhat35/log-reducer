@@ -1,13 +1,13 @@
 #!/bin/bash
 
-./testCase1.o "test.txt"
-./testCase2.o "test.txt"
-./testCase3.o "test.txt"
-./testCase4.o "test.txt"
-./testCase5.o "test.txt"
-./testCase6.o "test.txt"
-./testCase7.o "test.txt"
-./testCase8.o "test.txt"
-./testCase9.o "test.txt"
-# ./testCase10.o
-# ./testCase11.o
+./testCase1 "test.txt"
+./testCase2 "test.txt"
+./testCase3 "test.txt"
+./testCase4 "test.txt"
+./testCase5 "test.txt"
+./testCase6 "test.txt"
+./testCase7 "test.txt"
+./testCase8 "test.txt"
+./testCase9 "test.txt"
+./testCase10
+./testCase11
