@@ -59,70 +59,71 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
     current_forward_files = forward_files.difference(global_list_processed_files_forward)
     current_backward_files = backward_files.difference(global_list_processed_files_backward)
 
-    global_list_processed_files_forward = \
-        global_list_processed_files_forward.union(current_forward_files)
-    global_list_processed_files_backward = \
-        global_list_processed_files_backward.union(current_backward_files)
+    if len(current_forward_files) != 0 and len(current_backward_files)!=0:
+        global_list_processed_files_forward = \
+            global_list_processed_files_forward.union(current_forward_files)
+        global_list_processed_files_backward = \
+            global_list_processed_files_backward.union(current_backward_files)
 
-    reduction_count = 0
-    parents, children, events, csv_details, parents_id, children_id, sizes = parser(list(current_forward_files), \
-        list(current_backward_files))
-    print "done with parser"
-    parent_ids = []
-    stacks = defaultdict(list)
+        reduction_count = 0
+        parents, children, events, csv_details, parents_id, children_id, sizes = parser(list(current_forward_files), \
+            list(current_backward_files))
+        print "done with parser"
+        parent_ids = []
+        stacks = defaultdict(list)
 
-    events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
-    events_final = copy.deepcopy(events)
+        events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
+        events_final = copy.deepcopy(events)
 
-    reduction_dict = defaultdict(list)
+        reduction_dict = defaultdict(list)
 
-    for event, time_interval in events.items():
-        u, v, sys_call, id_ = event
-        if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
-            sys_call == "EVENT_READ" or sys_call == "EVENT_RECVFROM" or sys_call == "EVENT_RECVMSG":
-            if len(stacks[(u, v, sys_call)]) == 0:
-                stacks[(u, v, sys_call)].append(event)
-            else:
-                candidate_event = stacks[(u, v, sys_call)].pop(-1)
-                if (forward_check(candidate_event, event, v, children, events) and \
-                        backward_check(candidate_event, event, u, parents, events)):
-                    lower_limit, upper_limit = find_lower_upper_limit_of_interval(candidate_event, event, events)
-                    events[candidate_event] = (lower_limit, upper_limit,) #the lower limit and upper
-                    #limit gets updated for the same key as of the popped event
-                    events_final[candidate_event] = (lower_limit, upper_limit,)
-                    id_candidate_event = candidate_event[3]
-                    size_reduced = sizes[id_] + sizes[id_candidate_event]
-                    sizes[id_candidate_event] = size_reduced
-                    s = time.time()
-                    parents_index = index(parents_id[v], id_)
-                    if parents_index != -1:
-                        del parents[v][parents_index]
-                        del parents_id[v][parents_index]
-
-                    e = time.time()
-                    print "<function 1_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
-
-                    s = time.time()
-                    children_index = index(children_id[u], id_)
-                    if children_index != -1:
-                        del children[u][children_index]
-                        del children_id[u][children_index]
-
-                    e = time.time()
-                    print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
-                    del events_final[event]
-                    reduction_dict[candidate_event].append(id_)
-                    reduction_count += 1
-                    stacks[(u, v, sys_call)].append(candidate_event)
-                else:
+        for event, time_interval in events.items():
+            u, v, sys_call, id_ = event
+            if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
+                sys_call == "EVENT_READ" or sys_call == "EVENT_RECVFROM" or sys_call == "EVENT_RECVMSG":
+                if len(stacks[(u, v, sys_call)]) == 0:
                     stacks[(u, v, sys_call)].append(event)
-    print "the Reduction count is --> ", reduction_count
-    with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
-        reverse=True)[0]
-    with open ('results_reduction.txt','w') as f:
-        f.write(str(with_highest_reduction_count))
-    make_final_csv(events_final, csv_details, sizes, count)
+                else:
+                    candidate_event = stacks[(u, v, sys_call)].pop(-1)
+                    if (forward_check(candidate_event, event, v, children, events) and \
+                            backward_check(candidate_event, event, u, parents, events)):
+                        lower_limit, upper_limit = find_lower_upper_limit_of_interval(candidate_event, event, events)
+                        events[candidate_event] = (lower_limit, upper_limit,) #the lower limit and upper
+                        #limit gets updated for the same key as of the popped event
+                        events_final[candidate_event] = (lower_limit, upper_limit,)
+                        id_candidate_event = candidate_event[3]
+                        size_reduced = sizes[id_] + sizes[id_candidate_event]
+                        sizes[id_candidate_event] = size_reduced
+                        s = time.time()
+                        parents_index = index(parents_id[v], id_)
+                        if parents_index != -1:
+                            del parents[v][parents_index]
+                            del parents_id[v][parents_index]
 
+                        e = time.time()
+                        print "<function 1_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
+
+                        s = time.time()
+                        children_index = index(children_id[u], id_)
+                        if children_index != -1:
+                            del children[u][children_index]
+                            del children_id[u][children_index]
+
+                        e = time.time()
+                        print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
+                        del events_final[event]
+                        reduction_dict[candidate_event].append(id_)
+                        reduction_count += 1
+                        stacks[(u, v, sys_call)].append(candidate_event)
+                    else:
+                        stacks[(u, v, sys_call)].append(event)
+        print "the Reduction count is --> ", reduction_count
+        with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
+            reverse=True)[10]
+        with open ('analysis_results.txt','w') as f:
+            f.write(str(with_highest_reduction_count))
+        make_final_csv(events_final, csv_details, sizes, count)
+`
     return global_list_processed_files_forward, global_list_processed_files_backward
 
 
