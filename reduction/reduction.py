@@ -57,6 +57,8 @@ def reduction():
     events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
     events_final = copy.deepcopy(events)
 
+    reduction_dict = defaultdict(list)
+
     for event, time_interval in events.items():
         u, v, sys_call, id_ = event
         if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
@@ -92,11 +94,16 @@ def reduction():
                     e = time.time()
                     print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
                     del events_final[event]
+                    reduction_dict[candidate_event].append(id_)
                     reduction_count += 1
                     stacks[(u, v, sys_call)].append(candidate_event)
                 else:
                     stacks[(u, v, sys_call)].append(event)
-    print "the Reduction count is --> ", reduction_count            
+    print "the Reduction count is --> ", reduction_count
+    with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
+        reverse=True)[0]
+    with open ('results_reduction.txt','w') as f:
+        f.write(str(with_highest_reduction_count))
     make_final_csv(events_final, csv_details, sizes)
 
 
