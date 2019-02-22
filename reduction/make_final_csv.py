@@ -49,21 +49,21 @@ def make_final_csv(events_final, csv_details, sizes, count):
             l = [zero_col, one_col, sys_call, u, v, five_col, six_col, size, eight_col, time_start, time_end]
             backward_writer.writerow(l)
 
-        if forward_count % num_entries_per_file == 0:
-            forward_file.flush()
-            forward_file.close()
-
-            forward_file_index += 1
-            forward_file = open(forward_file_name % forward_file_index, mode='w')
-            forward_writer = csv.writer(forward_file, delimiter=',')
-
-        if backward_count % num_entries_per_file == 0:
-            backward_file.flush()
-            backward_file.close()
-
-            backward_file_index += 1
-            backward_file = open(backward_file_name % backward_file_index, mode='w')
-            backward_writer = csv.writer(backward_file, delimiter=',')
+        # if forward_count % num_entries_per_file == 0:
+        #     forward_file.flush()
+        #     forward_file.close()
+        #
+        #     forward_file_index += 1
+        #     forward_file = open(forward_file_name % forward_file_index, mode='w')
+        #     forward_writer = csv.writer(forward_file, delimiter=',')
+        #
+        # if backward_count % num_entries_per_file == 0:
+        #     backward_file.flush()
+        #     backward_file.close()
+        #
+        #     backward_file_index += 1
+        #     backward_file = open(backward_file_name % backward_file_index, mode='w')
+        #     backward_writer = csv.writer(backward_file, delimiter=',')
 
     forward_file.close()
     backward_file.close()

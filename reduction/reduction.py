@@ -1,4 +1,5 @@
 import string
+import os
 import time
 import bisect
 import copy
@@ -11,7 +12,7 @@ from make_final_csv import make_final_csv
 from forward_backward_check import forward_check, backward_check
 
 
-INCOMING_DIR = "/data/neo4j-ctests/"
+INCOMING_DIR = "/data/new-csvs/"
 
 def timed(decorated_fn):
     def wrapper_fn(*args, **kwargs):
@@ -123,7 +124,7 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
         with open ('analysis_results.txt','w') as f:
             f.write(str(with_highest_reduction_count))
         make_final_csv(events_final, csv_details, sizes, count)
-`
+
     return global_list_processed_files_forward, global_list_processed_files_backward
 
 
