@@ -2,12 +2,16 @@ import string
 import time
 import bisect
 import copy
+import glob
+import time
 from collections import defaultdict, OrderedDict
 
 from theia_parser import parser, compareTo
 from make_final_csv import make_final_csv
 from forward_backward_check import forward_check, backward_check
 
+
+INCOMING_DIR = "/data/neo4j-ctests/"
 
 def timed(decorated_fn):
     def wrapper_fn(*args, **kwargs):
@@ -46,10 +50,23 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 
 @timed
 #@profile
-def reduction():
+def reduction(global_list_processed_files_forward, global_list_processed_files_backward, count):
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
+
+    forward_files = set(glob.glob(os.path.join(INCOMING_DIR, 'forward-edge-*.csv')))
+    backward_files = set(glob.glob(os.path.join(INCOMING_DIR, 'backward-edge-*.csv')))
+
+    current_forward_files = forward_files.difference(global_list_processed_files_forward)
+    current_backward_files = backward_files.difference(global_list_processed_files_backward)
+
+    global_list_processed_files_forward = \
+        global_list_processed_files_forward.union(current_forward_files)
+    global_list_processed_files_backward = \
+        global_list_processed_files_backward.union(current_backward_files)
+
     reduction_count = 0
-    parents, children, events, csv_details, parents_id, children_id, sizes = parser()
+    parents, children, events, csv_details, parents_id, children_id, sizes = parser(list(current_forward_files), \
+        list(current_backward_files))
     print "done with parser"
     parent_ids = []
     stacks = defaultdict(list)
@@ -104,12 +121,21 @@ def reduction():
         reverse=True)[0]
     with open ('results_reduction.txt','w') as f:
         f.write(str(with_highest_reduction_count))
-    make_final_csv(events_final, csv_details, sizes)
+    make_final_csv(events_final, csv_details, sizes, count)
+
+    return global_list_processed_files_forward, global_list_processed_files_backward
 
 
 def main():
-    reduction()
-
+    global_list_processed_files_forward = set()
+    global_list_processed_files_backward = set()
+    count = 0
+    while (1):
+        global_list_processed_files_forward, \
+            global_list_processed_files_backward = reduction(global_list_processed_files_forward, \
+                global_list_processed_files_backward, count)
+        count += 1
+        time.sleep(15)
 
 if __name__ == '__main__':
     main()

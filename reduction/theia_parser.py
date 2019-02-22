@@ -17,9 +17,9 @@ def compareTo(time1, time2):
 
     return ((start_1_second < start_2_second) or (start_1_second == start_2_second and start_1_milli < start_2_milli) or (start_1_second == start_2_second and start_1_milli == start_2_milli and start_1_serial <= start_2_serial))
 
-def read_csv(PATH, pattern):
-    all_file_names_list = glob.glob(os.path.join(PATH, pattern))
-    all_file_names_list = natsorted(all_file_names_list)
+def read_csv(files):
+
+    all_file_names_list = natsorted(files)
 
     for filename in all_file_names_list:
         file = open(filename, 'rb')
@@ -28,7 +28,7 @@ def read_csv(PATH, pattern):
         for row in f_reader:
             yield row
 
-def parser():
+def parser(current_forward_files, current_backward_files):
     parents = defaultdict(list)
     children = defaultdict(list)
     parents_id = defaultdict(list)
@@ -38,8 +38,8 @@ def parser():
     meta = defaultdict(tuple)
     time = dict()
 
-    f = read_csv(FORWARD_CSV_PATH, 'forward-edge-*.csv')
-    b = read_csv(BACKWARD_CSV_PATH, 'backward-edge-*.csv')
+    f = read_csv(current_forward_files)
+    b = read_csv(current_backward_files)
 
     f_row = next(f, "DONE")
     b_row = next(b, "DONE")

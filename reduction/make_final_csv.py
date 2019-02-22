@@ -13,15 +13,15 @@ def timed(decorated_fn):
     return wrapper_fn
 
 @timed
-def make_final_csv(events_final, csv_details, sizes):
+def make_final_csv(events_final, csv_details, sizes, count):
     forward_count = 0
     backward_count = 0
 
     forward_file_index = 0
     backward_file_index = 0
 
-    forward_file_name = 'forward-reduced-%05d.csv'
-    backward_file_name = 'backward-reduced-%05d.csv'
+    forward_file_name = str(count) + 'forward-reduced-%05d.csv'
+    backward_file_name = str(count) + 'backward-reduced-%05d.csv'
 
     forward_file = open(forward_file_name % forward_file_index, mode='w')
     backward_file = open(backward_file_name % backward_file_index, mode='w')
