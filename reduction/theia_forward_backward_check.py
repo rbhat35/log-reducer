@@ -1,5 +1,5 @@
 import time
-from parser import compareTo
+from theia_parser import compareTo
 
 
 def timed(decorated_fn):

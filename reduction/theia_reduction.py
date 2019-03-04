@@ -8,11 +8,9 @@ import time
 from collections import defaultdict, OrderedDict
 
 from theia_parser import parser, compareTo
-from make_final_csv import make_final_csv
-from forward_backward_check import forward_check, backward_check
+from theia_make_final_csv import make_final_csv
+from theia_forward_backward_check import forward_check, backward_check
 
-
-INCOMING_DIR = "/Users/sanyachaba/Downloads/"
 
 def timed(decorated_fn):
     def wrapper_fn(*args, **kwargs):
@@ -51,11 +49,11 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 
 @timed
 #@profile
-def reduction(global_list_processed_files_forward, global_list_processed_files_backward, count):
+def reduction(global_list_processed_files_forward, global_list_processed_files_backward, count, incoming_dir):
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
-
-    forward_files = set(glob.glob(os.path.join(INCOMING_DIR, 'forward-edge-*.csv')))
-    backward_files = set(glob.glob(os.path.join(INCOMING_DIR, 'backward-edge-*.csv')))
+    print "Here in theia"
+    forward_files = set(glob.glob(os.path.join(incoming_dir, 'forward-edge-*.csv')))
+    backward_files = set(glob.glob(os.path.join(incoming_dir, 'backward-edge-*.csv')))
 
     current_forward_files = forward_files.difference(global_list_processed_files_forward)
     current_backward_files = backward_files.difference(global_list_processed_files_backward)
@@ -76,8 +74,6 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
         events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))
         events_final = copy.deepcopy(events)
 
-        reduction_dict = defaultdict(list)
-
         for event, time_interval in events.items():
             u, v, sys_call, id_ = event
             if sys_call == "EVENT_WRITE" or sys_call == "EVENT_SENDTO" or sys_call == "EVENT_SENDMSG" or \
@@ -95,34 +91,26 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
                         id_candidate_event = candidate_event[3]
                         size_reduced = sizes[id_] + sizes[id_candidate_event]
                         sizes[id_candidate_event] = size_reduced
-                        s = time.time()
                         parents_index = index(parents_id[v], id_)
                         if parents_index != -1:
                             del parents[v][parents_index]
                             del parents_id[v][parents_index]
 
-                        e = time.time()
-                        print "<function 1_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
-
-                        s = time.time()
                         children_index = index(children_id[u], id_)
                         if children_index != -1:
                             del children[u][children_index]
                             del children_id[u][children_index]
 
-                        e = time.time()
-                        print "<function 2_for_loop at 0x7f2d0bd670c8> took ", (e - s) ," seconds"
                         del events_final[event]
-                        reduction_dict[candidate_event].append(id_)
                         reduction_count += 1
                         stacks[(u, v, sys_call)].append(candidate_event)
                     else:
                         stacks[(u, v, sys_call)].append(event)
         print "the Reduction count is --> ", reduction_count
-        with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
-            reverse=True)
-        with open ('analysis_results.txt','w') as f:
-            f.write(str(with_highest_reduction_count))
+        # with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
+        #     reverse=True)
+        # with open ('analysis_results.txt','w') as f:
+        #     f.write(str(with_highest_reduction_count))
         make_final_csv(events_final, csv_details, sizes, count)
 
     return global_list_processed_files_forward, global_list_processed_files_backward
