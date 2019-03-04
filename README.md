@@ -123,11 +123,16 @@ program `ls` using the command line parameter `-h`, the command below would be u
 
 Running the reduction code
 ===
-The paths for the forwards and backwards csv needs to be updated.
+folder_name specifies the folder in which the forward and backward files are present. All the forward
+files should be of the form forward-edge-* and all the backward files should be of the form backward-edge-*
 
 ```shell
 cd reduction
-python -m memory_profiler reduction.py
+to run the reduction code in theia mode:
+python main.py <folder_name> is_theia
+to run the reduction code in linux mode:
+python main.py <folder_name>
+
 ```
 
 Performance Improvement
@@ -138,4 +143,4 @@ In order to check forward and backward dependencies we need to access the parent
 
 According to the algorithm, after checking the dependencies, if there is a reduction i.e. two edges need to be replaced by 1, we eliminate the edge from the lists mentioned above. Since each edge has a unique id, we know the id that needs to be deleted (the edge that is redundant according to the reduction algorithm). Here, we use binary search to search the redundant edge id in the lists mentioned above, as opposed to using a linear search being used initially.
 
-This decreased the complexity from O(n) to O(logn) and drastically reduced the reduction time for large logs (for eg. 36 hour logs). 
+This decreased the complexity from O(n) to O(logn) and drastically reduced the reduction time for large logs (for eg. 36 hour logs).
