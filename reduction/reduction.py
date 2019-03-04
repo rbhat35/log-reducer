@@ -12,7 +12,7 @@ from make_final_csv import make_final_csv
 from forward_backward_check import forward_check, backward_check
 
 
-INCOMING_DIR = "/data/new-csvs/"
+INCOMING_DIR = "/Users/sanyachaba/Downloads/"
 
 def timed(decorated_fn):
     def wrapper_fn(*args, **kwargs):
@@ -120,7 +120,7 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
                         stacks[(u, v, sys_call)].append(event)
         print "the Reduction count is --> ", reduction_count
         with_highest_reduction_count = sorted(reduction_dict.items(), key = lambda (k, v): len(v), \
-            reverse=True)[10]
+            reverse=True)
         with open ('analysis_results.txt','w') as f:
             f.write(str(with_highest_reduction_count))
         make_final_csv(events_final, csv_details, sizes, count)
