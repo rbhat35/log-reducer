@@ -51,9 +51,11 @@ def find_lower_upper_limit_of_interval(e_, e, events):
 def reduction(global_list_processed_files_forward, global_list_processed_files_backward, count, incoming_dir):
     # details of csv_details: key-- id; value-- (first col, fourth col, string(forward, backward))
     print "Here in linux"
+    print incoming_dir
     forward_files = set(glob.glob(os.path.join(incoming_dir, 'forward-edge-*.csv')))
     backward_files = set(glob.glob(os.path.join(incoming_dir, 'backward-edge-*.csv')))
-
+    print forward_files
+    print backward_files
     current_forward_files = forward_files.difference(global_list_processed_files_forward)
     current_backward_files = backward_files.difference(global_list_processed_files_backward)
 
@@ -63,7 +65,8 @@ def reduction(global_list_processed_files_forward, global_list_processed_files_b
         global_list_processed_files_backward = \
             global_list_processed_files_backward.union(current_backward_files)
 
-        parents, children, events, csv_details, parents_id, children_id = parser()
+        parents, children, events, csv_details, parents_id, children_id = parser(list(current_forward_files), \
+            list(current_backward_files))
         parent_ids = []
         stacks = defaultdict(list)
         events = OrderedDict(sorted(events.items(), key = lambda (k, v): v[0]))

@@ -1,10 +1,11 @@
 import csv
 import string
+from natsort import natsorted
 from collections import defaultdict, OrderedDict
 
 
-FORWARD_CSV_PATH = "../parser/backwards.csv"
-BACKWARD_CSV_PATH = "../parser/forward.csv"
+#FORWARD_CSV_PATH = "../parser/backwards.csv"
+#BACKWARD_CSV_PATH = "../parser/forward.csv"
 
 
 def compareTo(time1, time2):
@@ -14,14 +15,24 @@ def compareTo(time1, time2):
 
     return ((start_1_second < start_2_second) or (start_1_second == start_2_second and start_1_milli < start_2_milli) or (start_1_second == start_2_second and start_1_milli == start_2_milli and start_1_serial <= start_2_serial))
 
-def read_csv(PATH):
-    f_csvfile = open(PATH, 'rb')
+#def read_csv(PATH):
+#    f_csvfile = open(PATH, 'rb')
 
-    f_reader = csv.reader(f_csvfile)
-    for row in f_reader:
-        yield row
+#    f_reader = csv.reader(f_csvfile)
+#    for row in f_reader:
+#        yield row
+def read_csv(files):
 
-def parser():
+    all_file_names_list = natsorted(files)
+
+    for filename in all_file_names_list:
+        file = open(filename, 'rb')
+        f_reader = csv.reader(file, delimiter=',')
+
+        for row in f_reader:
+            yield row
+
+def parser(current_forward_files, current_backward_files):
     parents = defaultdict(list)
     children = defaultdict(list)
     parents_id = defaultdict(list)
@@ -32,8 +43,8 @@ def parser():
 
     id = 0
 
-    f = read_csv(FORWARD_CSV_PATH)
-    b = read_csv(BACKWARD_CSV_PATH)
+    f = read_csv(current_forward_files)
+    b = read_csv(current_backward_files)
 
     f_row = next(f, "DONE")
     b_row = next(b, "DONE")
