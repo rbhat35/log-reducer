@@ -1,14 +1,16 @@
 Running the reduction code
 ===
+
+The following needs to be done one time. 
+
+shell
+pip install -r requirements.txt
+```
+
 folder_name specifies the folder in which the forward and backward files are present. All the forward
 files should be of the form forward-edge-* and all the backward files should be of the form backward-edge-*
 The resultant csvs get saved in reduction/.
 
-The following needs to be done one time. 
-
-```shell
-pip install -r requirements.txt
-```
 
 ```shell
 cd reduction
@@ -22,7 +24,7 @@ sudo rm -rf /var/lib/neo4j/data/databases/graph.db
 sudo service neo4j start
 cd parser/
 $ sudo ./neo4j-load-reduced-csv.sh .
-```
+``````
 The above command will access the reduced csvs in the reduction/ directory and generate graphs in neo4j database. 
 
 
