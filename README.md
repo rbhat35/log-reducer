@@ -33,15 +33,17 @@ Example Graphs
 ===
 
 There are two example graphs that can be used to verify the setup is correct
-in the examples directory. Run the commands below to create the raw audit
-logs. If `run_tests.sh` is ran succesfully, two files will be created:
+in the generate_audit_logs/ directory. Run the commands below to create the raw audit
+logs. If `run_sample_tests.sh` is ran succesfully, two files will be created:
 `readloop_1024.audit` and `readloop_256.audit`.
 
 ```shell
-cd examples
+cd generate_audit_logs
 make
-./run_tests.sh
+./run_sample_tests.sh
 ```
+
+* Note we have provided unit tests in `/c_tests/`. Run `./run_tests_c.sh` to generate audit logs for each test case.
 
 The next task is parsing the logs, which will convert the audit format
 into csv files that can be inserted into Neo4j. Neo4j is a graph database.
@@ -50,7 +52,7 @@ files `forward.csv` and `backwards.csv`.
 
 ```shell
 cd parser
-python parser.py ../examples/readloop_256.audit
+python parser.py ../generate_audit_logs/readloop_256.audit
 ```
 
 Note: This will generate two files: `forward.csv` and `backwards.csv` which store the parsed data.
@@ -115,16 +117,7 @@ Created 11 relationships, Set 22 properties
 You can view the graph visually by going to http://143.215.130.71:7474/browser/
 in a browser. A tutorial on how to visualize the graph can be found here (https://neo4j.com/developer/guide-neo4j-browser/).
 
-
-Tracing a new Program
-===
-
-The trace a program you can run the command `./example.trace.sh "<path to file> <arguments>" output file. For example, to trace the
-program `ls` using the command line parameter `-h`, the command below would be used.. The output would be saved to ls.audit.
-
-```shell
-./examples/trace.sh "/bin/ls -h" ls.audit
-```
+Note: You can also use `/parser/generate_graphs.sh` to generate audit logs, parse the logs, and graph them all in one step.
 
 Running the reduction code
 ===

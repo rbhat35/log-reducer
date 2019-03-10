@@ -2,3 +2,5 @@ rawlogs/*
 *.o
 *.pyc
 /data/new-csvs/*
+/parser/backwards.csv
+/parser/forward.csv
