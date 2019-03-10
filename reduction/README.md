@@ -3,7 +3,7 @@ Running the reduction code
 
 The following needs to be done one time. 
 
-shell
+```shell
 pip install -r requirements.txt
 ```
 
