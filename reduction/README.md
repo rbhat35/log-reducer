@@ -4,6 +4,12 @@ folder_name specifies the folder in which the forward and backward files are pre
 files should be of the form forward-edge-* and all the backward files should be of the form backward-edge-*
 The resultant csvs get saved in reduction/.
 
+The following needs to be done one time. 
+
+```shell
+pip install -r requirements.txt
+```
+
 ```shell
 cd reduction
 python reduction.py <folder_name>
