@@ -1,6 +1,19 @@
-Tracing Setup
+Setup Instructions for Reduction Code
 ===
 
+Currently, this system is comprised of two parts:
+1. A log parser, which takes the raw output of Linux Audit logs and forms two CSVs (`backwards.csv` and `forward.csv`) containing information to be stored.
+2. A reduction algorithm, which takes these log files as input and produces a reduced version.
+    i. You will have to include a parser for your machine
+    ii. You will have to include a file that takes the output of `reduction.py` and prints.
+
+We have included instructions, as well as parsers in this repository, to use our code with the Linux Audit System (Version ######).
+
+
+Linux Audit Instructions
+===
+
+If you would like to setup the system to trace your own files:
 The tracing system is built on top of libaudit
 
 ```shell
@@ -10,23 +23,10 @@ mkdir bin
 make trace
 ```
 
-
-Parsing Setup
-===
-
+We have included a python script to parse the libaudit output:
 ```shell
 cd parser
 pip install -r requirements.txt
-```
-
-
-Starting Neo4j
-===
-
-Start the Neo4j service
-
-```shell
-sudo service neo4j start
 ```
 
 Example Graphs
@@ -52,6 +52,8 @@ files `forward.csv` and `backwards.csv`.
 cd parser
 python parser.py ../examples/readloop_256.audit
 ```
+
+Note: This will generate two files: `forward.csv` and `backwards.csv` which store the parsed data.
 
 ```shell
 DEBUG:__main__:Parsing syscall: execve
@@ -90,9 +92,12 @@ INFO:modules.filemap:inode: 0xc206d4
 1536767036.262.25345,27430:"/home/jallen309/log-compression-project/examples/readloop",read,0xc206d4,"256.txt"
 ```
 
+Note: on some larger logs, you may see many errors on certain types of systems. This is a result of starting the audit system after files have been opened by the processes that are accessing them.
 
-The final step is to insert the data into Neo4j. To do this run the following
-command:
+
+Optional Step: For small graphs and debugging, it may be helpful to visualize the unreduced and reduced graph.
+
+To insert the data into Neo4j, run the following command:
 
 ```shell
 $ sudo ./neo4j-load-csv.sh .
@@ -107,7 +112,7 @@ Created 2 relationships, Set 4 properties
 Created 11 relationships, Set 22 properties
 ```
 
-Finally, you can view the graph visually by going to http://143.215.130.71:7474/browser/
+You can view the graph visually by going to http://143.215.130.71:7474/browser/
 in a browser. A tutorial on how to visualize the graph can be found here (https://neo4j.com/developer/guide-neo4j-browser/).
 
 
@@ -128,6 +133,13 @@ files should be of the form forward-edge-* and all the backward files should be 
 
 ```shell
 cd reduction
+python reduction.py
+```
+
+Visualizing reduced graph:
+```shell
+cd parser/
+$ sudo ./neo4j-load-reduced-csv.sh .
 to run the reduction code in theia mode:
 python main.py <folder_name> is_theia
 to run the reduction code in linux mode:
