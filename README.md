@@ -1,11 +1,9 @@
-Setup Instructions for Reduction Code
+Setup Instructions
 ===
 
 Currently, this system is comprised of two parts:
 1. A log parser, which takes the raw output of Linux Audit logs and forms two CSVs (`backwards.csv` and `forward.csv`) containing information to be stored.
-2. A reduction algorithm, which takes these log files as input and produces a reduced version.
-    i. You will have to include a parser for your machine
-    ii. You will have to include a file that takes the output of `reduction.py` and prints.
+2. A reduction algorithm, which takes these log files as input and produces a reduced version, the instructions of which can be found in the README reduction/. You will have to include a parser for your machine, if not using the one provided by us in parser/ (to generate the csvs that need to be reduced). Example csvs are provided in parser/. 
 
 We have included instructions, as well as parsers in this repository, to use our code with the Linux Audit System (Version ######).
 
