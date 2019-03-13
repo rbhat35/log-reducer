@@ -116,3 +116,5 @@ You can view the graph visually by going to http://143.215.130.71:7474/browser/
 in a browser. A tutorial on how to visualize the graph can be found here (https://neo4j.com/developer/guide-neo4j-browser/).
 
 Note: You can also use `/parser/generate_graphs.sh` to generate audit logs, parse the logs, and graph them all in one step.
+
+Contact: rsbhat2 "at" gmail "dot" com regarding any questions.
