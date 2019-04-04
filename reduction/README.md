@@ -18,6 +18,7 @@ python reduction.py <folder_name>
 ```
 
 Visualizing reduced graph:
+Chnage the path of reduced csvs in neo4j-load-reduced-csv.sh. Also, we don't need to do the first three commands as they are already present in neo4j-load-reduced-csv.sh
 ```shell
 sudo service neo4j stop
 sudo rm -rf /var/lib/neo4j/data/databases/graph.db
