@@ -1,0 +1,39 @@
+Home directory for neo4j instance:
+/var/lib/neo4j
+
+Clear Database:
+sudo rm -rf /var/lib/neo4j/data/databases/graph.db
+
+Queries:
+
+Graph we're dealing with: 5868 edges
+
+Nodes with no relationships:
+
+Query: MATCH (n) WHERE NOT (n)--() RETURN COUNT(n)
+Result: 14
+
+Count the number of nodes with ‘y’ number of hops:
+
+MATCH (x)-[:SYSCALL*y]->() RETURN Count(x)
+
+Replace x with the number of hops. Here SYSCALL is the type of relationship
+
+0: 4107
+1: 2932
+2: 81055
+3: 0
+
+Longest Path: 2 hops
+Shortest Path: 1 hop
+
+Count the number of nodes with outgoing number of hops between 0 and 1:
+
+MATCH (x)-[:SYSCALL*0..1]->() RETURN Count(x)
+
+7039 = 4107 + 2932
+
+Count the total number of edges
+
+MATCH (n)-[r]->() RETURN COUNT(r)
+5868
