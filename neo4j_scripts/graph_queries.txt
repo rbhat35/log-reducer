@@ -6,14 +6,12 @@ sudo rm -rf /var/lib/neo4j/data/databases/graph.db
 
 Queries:
 
-Graph we're dealing with: 5868 edges
-
 Nodes with no relationships:
 
 Query: MATCH (n) WHERE NOT (n)--() RETURN COUNT(n)
 Result: 14
 
-Count the number of nodes with ‘y’ number of hops:
+Count the number of nodes with ‘y’ number of outgoing hops:
 
 MATCH (x)-[:SYSCALL*y]->() RETURN Count(x)
 
@@ -37,3 +35,25 @@ Count the total number of edges
 
 MATCH (n)-[r]->() RETURN COUNT(r)
 5868
+
+To find the number of dijoint graphs and number of nodes in each disjoint graph:
+
+https://neo4j.com/docs/graph-algorithms/current/algorithms/connected-components/
+
+CALL algo.unionFind(‘NODE’, ’SYSCALL’, {write:true, partitionProperty:"partition"})
+YIELD nodes, setCount, loadMillis, computeMillis, writeMillis;
+
+Number of nodes where the incoming edge is EVENT_READ and EVENT_WRITE
+
+MATCH (n)<-[r]-() WHERE r.type = 'EVENT_READ' RETURN COUNT(r)
+Result: 2618
+
+MATCH (n)<-[r]-() WHERE r.type = 'EVENT_WRITE' RETURN COUNT(r)
+Result: 888
+
+Node that generates the maximum number of edges:
+
+355	8718:sshd: theia@pts/1
+355	2f90a2a9-b9b6-579c-bb65-0b0cd8fc84d9_c0a87a03-1600-c0a8-7a01-a4b800000000
+
+MATCH (n)-[r]->() RETURN COUNT(r), n.name
